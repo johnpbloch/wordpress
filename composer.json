@@ -1,0 +1,25 @@
+{
+	"name": "johnpbloch/wordpress",
+	"description": "WordPress is web software you can use to create a beautiful website or blog.",
+	"keywords": ["blog", "cms"],
+	"type": "wordpress-core",
+	"homepage": "http://wordpress.org/",
+	"license": "GPL-2.0+",
+	"authors": [
+		{
+			"name": "WordPress Community",
+			"homepage": "http://wordpress.org/about/"
+		}
+	],
+	"support": {
+		"issues": "http://core.trac.wordpress.org/",
+		"forum": "http://wordpress.org/support/",
+		"wiki": "http://codex.wordpress.org/",
+		"irc": "irc://irc.freenode.net/wordpress",
+		"source": "http://core.trac.wordpress.org/browser"
+	},
+	"require": {
+		"php": ">=5.3.2",
+		"johnpbloch/wordpress-core-installer": "~0.2"
+	}
+}
