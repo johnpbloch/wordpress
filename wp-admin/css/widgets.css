@@ -1,0 +1,188 @@
+/* 2 column liquid layout */
+div.widget-liquid-left-holder {
+	float: left;
+	clear: left;
+	width: 100%;
+	margin-right: -310px;
+}
+
+div.widget-liquid-left {
+	margin-right: 320px;
+}
+
+div.widget-liquid-right {
+	float: right;
+	clear: right;
+	width: 300px;
+	position: relative;
+}
+
+/* pasitioning etc. */
+form#widgets-filter {
+	position: relative;
+}
+
+div#available-widgets-filter {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+p#widget-search {
+	position: absolute;
+	right: 0;
+	top: 0;
+	margin: 0;
+}
+
+ul#widget-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+ul#widget-list li.widget-list-item {
+	padding: .7em 0.9em;
+	margin: 0;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	line-height: 1;
+}
+
+h4.widget-title span {
+	float: left;
+}
+
+h4.widget-title a {
+	float: right;
+	text-decoration: underline;
+	border-bottom: none;
+	margin-left: 1em;
+}
+
+ul#widget-list li.widget-list-item h4.widget-title {
+	position: relative;
+	margin: 0;
+	padding: .5em 1em;
+	width: 200px;
+	float: left;
+	font-size: 13px;
+	-moz-border-radius: 3px;
+	-khtml-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+#dragHelper h4.widget-title {
+	padding: .5em 1em;
+	margin: 0;
+}
+
+ul#widget-list li.widget-list-item div.widget-description {
+	display: block;
+	margin: 0 0 0 200px;
+	padding: 0 0 0 4em;
+	font-size: 11px;
+}
+
+ul#widget-list li.widget-list-item ul.widget-control-info {
+	display: none;
+}
+
+div#sidebar-info {
+	padding: 0 1em;
+	margin-bottom: 1em;
+	font-size: 11px;
+}
+
+ul.widget-control-list {
+	list-style: none;
+	margin: 0;
+	padding: 0 1em;
+}
+
+div#current-widgets p.submit {
+	padding: 1em;
+}
+
+li.widget-list-control-item {
+	margin: 1em 0;
+	-moz-border-radius: 3px;
+	-khtml-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+li.widget-list-control-item h4, 
+#dragHelper li.widget-list-control-item h4, 
+li.widget-sortable h4 {
+	margin: 0;
+	cursor: move;
+	font-size: 13px;
+	padding: 0.4em 0.8em;
+	position: relative;
+	-moz-border-radius: 3px;
+	-khtml-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.widget-control-save, .widget-control-remove {
+	padding: 3px 5px;
+	-moz-border-radius: 3px;
+	-khtml-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	margin-right: 8px;
+	float: left;
+	text-decoration: none;
+}
+
+li.widget-list-control-item h4.widget-title a,
+#dragHelper li.widget-list-control-item h4.widget-title a,
+#draghelper li.widget-list-control-item h4.widget-title a:visited {
+	right: 1em;
+}
+
+li.widget-list-control-item h4.widget-title a:hover {
+	text-decoration: none;
+	border-bottom: none;
+}
+
+li.widget-list-control-item div.widget-control {
+	display: none;
+	padding: 15px;
+	font-size: 11px;
+	position: relative;
+}
+
+li.widget-list-control-item div.widget-control p {
+	margin: 0 0 1em;
+	padding: 0;
+}
+
+ul.widget-control-list div.widget-control-actions {
+	border-top-width: 1px;
+	border-top-style: solid;
+	padding: 0.5em 0 0;
+}
+
+.widget-control-edit {
+	font-size: 10px;
+	font-weight: normal;
+}
+
+div#current-widgets {
+	padding-top: 1em;
+	border-width: 1px;
+	border-style: solid none none;
+}
+
+#widget-controls .widefat {
+	width: 92%;
+	padding: 3px;
+}
+
+#widget-controls select.widefat {
+	width: auto;
+	display: block;
+}

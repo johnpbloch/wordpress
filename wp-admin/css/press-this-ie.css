@@ -1,0 +1,7 @@
+#posting {
+ 	position: static !important;
+}
+ .ui-tabs-nav {
+ 	margin-left: 0;
+ 	border: 0 !important;
+}
