@@ -389,18 +389,6 @@ a:focus,
 a:active {
 	color: #5FF23D;
 }
-/* Animated elements */
-.site a,
-.more-link .meta-nav,
-.post-format-archive-link .meta-nav,
-.search-toggle,
-button,
-html input[type="button"],
-input[type="reset"],
-input[type="submit"] {
-	-webkit-transition: all 200ms ease-out;
-	transition:         all 200ms ease-out;
-}
 
 /* Alignment */
 .alignleft {
@@ -687,7 +675,7 @@ body {
 	white-space: nowrap;
 }
 .primary-navigation ul ul {
-	background-color: rgba(0, 0, 0, 0.9);
+	background-color: #24890d;
 	float: left;
 	position: absolute;
 		top: 48px;
@@ -711,11 +699,11 @@ body {
 .primary-navigation ul ul li {
 }
 .primary-navigation li:hover > a {
-	background-color: #2b2b2b;
+	background-color: #24890d;
 	color: #fff;
 }
 .primary-navigation ul ul a:hover {
-	color: #8c8c8c;
+	background-color: #000;
 }
 .primary-navigation ul li:hover > ul,
 .primary-navigation ul li.a11y-focus > ul {
@@ -725,9 +713,9 @@ body {
 .primary-navigation ul ul li.a11y-focus > ul {
 	left: 100%;
 }
-.primary-navigation li.current_page_item > a,
-.primary-navigation li.current-menu-item > a {
-	color: #5FF23D;
+.primary-navigation .current_page_item > a,
+.primary-navigation .current-menu-item > a {
+	color: #5ff23d;
 }
 
 /* Secondary Navigation */
@@ -1082,10 +1070,6 @@ footer.entry-meta .entry-title a:hover {
 	padding-right: 9px;
 	width: auto;
 	height: auto;
-}
-.site .tag-links a {
-	-webkit-transition: all 0ms ease-out;
-	transition:         all 0ms ease-out;
 }
 .tag-links a {
 	background-color: #767676;
