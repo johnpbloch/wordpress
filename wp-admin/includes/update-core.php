@@ -697,8 +697,8 @@ function update_core($from, $to) {
 	// Check to see which files don't really need updating - only available for 3.7 and higher
 	if ( function_exists( 'get_core_checksums' ) ) {
 		$checksums = get_core_checksums( $wp_version, isset( $wp_local_package ) ? $wp_local_package : 'en_US' );
-		if ( is_array( current( $checksums ) ) ) // Compat code for 3.7-beta2
-			$checksums = current( $checksums );
+		if ( is_array( $checksums ) && isset( $checksums[ $wp_version ] ) )
+			$checksums = $checksums[ $wp_version ]; // Compat code for 3.7-beta2
 		if ( is_array( $checksums ) ) {
 			foreach( $checksums as $file => $checksum ) {
 				if ( 'wp-content' == substr( $file, 0, 10 ) )
@@ -888,6 +888,9 @@ function update_core($from, $to) {
 	apply_filters( 'update_feedback', __( 'Disabling Maintenance mode&#8230;' ) );
 	// Remove maintenance file, we're done.
 	$wp_filesystem->delete($maintenance_file);
+
+	// Has to be in here, rather than the Upgrader as the filter below will override and kill the process before themes get updated on major updates
+	do_action( 'upgrader_process_complete', null, array( 'action' => 'update', 'type' => 'core' ) );
 
 	// If we made it this far:
 	do_action( '_core_updated_successfully', $wp_version );
