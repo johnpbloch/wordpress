@@ -245,7 +245,6 @@ class WP {
 			}
 		}
 
-		$this->public_query_vars;
 		/**
 		 * Filter the query variables whitelist before processing.
 		 *
@@ -257,7 +256,7 @@ class WP {
 		 *
 		 * @param array $public_query_vars The array of whitelisted query variables.
 		 */
-		$this->public_query_vars = apply_filters( 'query_vars', $public_query_vars );
+		$this->public_query_vars = apply_filters( 'query_vars', $this->public_query_vars );
 
 		foreach ( get_post_types( array(), 'objects' ) as $post_type => $t )
 			if ( $t->query_var )
@@ -315,7 +314,6 @@ class WP {
 		if ( isset($error) )
 			$this->query_vars['error'] = $error;
 
-		$query_vars = $this->query_vars;
 		/**
 		 * Filter the array of parsed query variables.
 		 *
@@ -323,7 +321,7 @@ class WP {
 		 *
 		 * @param array $query_vars The array of requested query variables.
 		 */
-		$this->query_vars = apply_filters( 'request', $query_vars );
+		$this->query_vars = apply_filters( 'request', $this->query_vars );
 
 		/**
 		 * Fires once all query variables for the current request have been parsed.
