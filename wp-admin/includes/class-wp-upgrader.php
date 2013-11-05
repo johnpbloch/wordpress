@@ -1313,7 +1313,9 @@ class Core_Upgrader extends WP_Upgrader {
 	}
 
 	function upgrade( $current, $args = array() ) {
-		global $wp_filesystem, $wp_version;
+		global $wp_filesystem;
+
+		include ABSPATH . WPINC . '/version.php'; // $wp_version;
 
 		$start_time = time();
 
@@ -1420,6 +1422,7 @@ class Core_Upgrader extends WP_Upgrader {
 				'fs_method'        => $wp_filesystem->method,
 				'fs_method_forced' => defined( 'FS_METHOD' ) || has_filter( 'filesystem_method' ),
 				'time_taken'       => time() - $start_time,
+				'reported'         => $wp_version,
 				'attempted'        => $current->version,
 			);
 
