@@ -19,6 +19,21 @@ function twentyfourteen_customize_register( $wp_customize ) {
 	$wp_customize->get_setting( 'blogname' )->transport        = 'postMessage';
 	$wp_customize->get_setting( 'blogdescription' )->transport = 'postMessage';
 
+	// Add custom description to colors section.
+	$wp_customize->add_section( 'colors', array(
+		'title'          => __( 'Colors',  'twentyfourteen' ),
+		'description'	 => __( 'Background may only be visible on wide screens.', 'twentyfourteen' ),
+		'priority'       => 40,
+	) );
+
+	// Add custom description to background image section.
+	$wp_customize->add_section( 'background_image', array(
+		'title'          => __( 'Background Image', 'twentyfourteen' ),
+		'description'	 => __( 'Background may only be visible on wide screens.', 'twentyfourteen' ),
+		'theme_supports' => 'custom-background',
+		'priority'       => 80,
+	) );
+
 	// Add the custom accent color setting and control.
 	$wp_customize->add_setting( 'accent_color', array(
 		'default'           => '#24890d',
@@ -28,23 +43,20 @@ function twentyfourteen_customize_register( $wp_customize ) {
 	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'accent_color', array(
 		'label'    => __( 'Accent Color', 'twentyfourteen' ),
 		'section'  => 'colors',
-		'settings' => 'accent_color',
 	) ) );
 
 	add_filter( 'theme_mod_accent_mid',  'twentyfourteen_accent_mid'  );
 	add_filter( 'theme_mod_accent_light', 'twentyfourteen_accent_light' );
 
-	// Add the featured content section.
+	// Add the featured content section in case it's not already there.
 	$wp_customize->add_section( 'featured_content', array(
 		'title'    => __( 'Featured Content', 'twentyfourteen' ),
-		'priority' => 120,
+		'priority' => 130,
 	) );
 
 	// Add the featured content layout setting and control.
 	$wp_customize->add_setting( 'featured_content_layout', array(
-		'default'    => 'grid',
-		'type'       => 'theme_mod',
-		'capability' => 'edit_theme_options',
+		'default' => 'grid',
 	) );
 
 	$wp_customize->add_control( 'featured_content_layout', array(
@@ -52,7 +64,7 @@ function twentyfourteen_customize_register( $wp_customize ) {
 		'section' => 'featured_content',
 		'type'    => 'select',
 		'choices' => array(
-			'grid'   => __( 'Grid', 'twentyfourteen' ),
+			'grid'   => __( 'Grid',   'twentyfourteen' ),
 			'slider' => __( 'Slider', 'twentyfourteen' ),
 		),
 	) );
