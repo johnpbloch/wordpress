@@ -66,8 +66,8 @@ function twentyfourteen_setup() {
 
 	// Enable support for Post Thumbnails, and declare two sizes.
 	add_theme_support( 'post-thumbnails' );
-	add_image_size( 'post-thumbnail-full-width', 1038, 576, true );
-	add_image_size( 'post-thumbnail', 672, 372, true );
+	set_post_thumbnail_size( 672, 372, true );
+	add_image_size( 'twentyfourteen-full-width', 1038, 576, true );
 
 	// This theme uses wp_nav_menu() in two locations.
 	register_nav_menus( array(
@@ -425,8 +425,6 @@ add_filter( 'body_class', 'twentyfourteen_body_classes' );
 function twentyfourteen_post_classes( $classes ) {
 	if ( ! post_password_required() && has_post_thumbnail() )
 		$classes[] = 'has-post-thumbnail';
-	else
-		$classes[] = 'no-post-thumbnail';
 
 	return $classes;
 }
