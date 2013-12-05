@@ -89,6 +89,7 @@ audio,
 canvas,
 video {
 	display: inline-block;
+	max-width: 100%;
 }
 
 html {
@@ -1651,18 +1652,32 @@ a.post-thumbnail:hover {
 	margin: 0;
 }
 
-.taxonomy-description {
+.taxonomy-description,
+.author-description {
 	color: #767676;
 	font-size: 14px;
 	line-height: 1.2857142857;
+	padding-top: 18px;
 }
 
-.taxonomy-description p {
+.taxonomy-description p,
+.author-description p {
 	margin-bottom: 18px;
 }
 
-.taxonomy-description p:last-child {
+.taxonomy-description p:last-child,
+.author-description p:last-child {
 	margin-bottom: 0;
+}
+
+.taxonomy-description a,
+.author-description a {
+	text-decoration: underline;
+}
+
+.taxonomy-description a:hover,
+.author-description a:hover {
+	text-decoration: none;
 }
 
 
