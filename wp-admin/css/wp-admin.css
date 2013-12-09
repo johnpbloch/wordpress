@@ -834,8 +834,7 @@ div.error {
 }
 
 .wrap .add-new-h2,
-.wrap .add-new-h2:active,
-#add-new-comment a {
+.wrap .add-new-h2:active {
 	margin-left: 4px;
 	padding: 4px 8px;
 	position: relative;
@@ -3456,12 +3455,6 @@ table.fixed {
 #commentsdiv p {
 	padding: 8px 10px;
 	margin: 0;
-}
-
-#commentsdiv #add-new-comment {
-	border-width: 0 0 1px;
-	border-style: none none solid;
-	margin-top: 6px;
 }
 
 #commentsdiv .comments-box {
@@ -10506,7 +10499,7 @@ h3.tb {
 #extra-fields .titlewrap {
 	padding: 0;
 	overflow: auto;
-	height: 100px;
+	height: 120px;
 }
 
 #img_container a {
@@ -11879,10 +11872,6 @@ li#wp-admin-bar-menu-toggle {
 		min-width: 0;
 	}
 
-	#titlediv #title {
-		padding: 8px;
-	}
-
 	#titlediv #title-prompt-text,
 	#wp-fullscreen-title-prompt-text {
 		padding: 10px 10px;
@@ -12006,6 +11995,11 @@ li#wp-admin-bar-menu-toggle {
 		-ms-word-break: break-all;
 		word-break: break-all;
 		word-wrap: break-word;
+	}
+
+	/* Discussion */
+	#commentstatusdiv p {
+		line-height: 2.8;
 	}
 
 	/* TinyMCE Adjustments */
