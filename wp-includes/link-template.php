@@ -1133,7 +1133,7 @@ function get_adjacent_post( $in_same_term = false, $excluded_terms = '', $previo
 		$excluded_terms = array();
 	}
 
-	$adjacent = new WP_Get_Adjacent_Post( array(
+	$adjacent = new WP_Adjacent_Post( array(
 		'post'           => get_post(),
 		'previous'       => $previous,
 		'taxonomy'       => $taxonomy,
@@ -1151,7 +1151,7 @@ function get_adjacent_post( $in_same_term = false, $excluded_terms = '', $previo
  * next post based on the criteria specified. Supports retrieving posts with the
  * same taxonomy terms and posts that lack specific terms.
  */
-class WP_Get_Adjacent_Post {
+class WP_Adjacent_Post {
 	public $adjacent_post = null;
 
 	protected $current_post   = false;
@@ -1294,7 +1294,7 @@ class WP_Get_Adjacent_Post {
 		 * @since 3.9.0
 		 *
 		 * @param array $query_args WP_Query arguments.
-		 * @param array $args       Arguments passed to WP_Get_Adjacent_Post.
+		 * @param array $args       Arguments passed to WP_Adjacent_Post.
 		 */
 		$query_args = apply_filters( 'get_adjacent_post_query_args', $query_args, $args );
 
