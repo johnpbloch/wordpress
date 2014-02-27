@@ -1013,6 +1013,10 @@ function wp_get_playlist( $attr, $type ) {
 		$orderby = 'none';
 	}
 
+	if ( ! in_array( $style, array( 'light', 'dark' ), true ) ) {
+		$style = 'light';
+	}
+
 	$args = array(
 		'post_status' => 'inherit',
 		'post_type' => 'attachment',
@@ -1113,13 +1117,16 @@ function wp_get_playlist( $attr, $type ) {
 	}
 	$data['tracks'] = $tracks;
 
+	$safe_type = esc_attr( $safe_type );
+	$safe_style = esc_attr( $style );
+
 	ob_start();
 
 	if ( 1 === $instance ):
 		wp_enqueue_style( 'wp-mediaelement' );
 		wp_enqueue_script( 'wp-playlist' );
 ?>
-<!--[if lt IE 9]><script>document.createElement('<?php echo $type ?>');</script><![endif]-->
+<!--[if lt IE 9]><script>document.createElement('<?php echo esc_js( $type ) ?>');</script><![endif]-->
 <script type="text/html" id="tmpl-wp-playlist-current-item">
 	<# if ( data.image ) { #>
 	<img src="{{{ data.thumb.src }}}"/>
@@ -1131,7 +1138,7 @@ function wp_get_playlist( $attr, $type ) {
 		<span class="wp-caption-meta wp-caption-artist">{{{ data.meta.artist }}}</span>
 	</div>
 	<# } else { #>
-	<div class="wp-playlist-caption">{{{ data.caption }}}</div>
+	<div class="wp-playlist-caption">{{{ data.caption ? data.caption : data.title }}}</div>
 	<# } #>
 </script>
 <script type="text/html" id="tmpl-wp-playlist-item">
@@ -1154,11 +1161,11 @@ function wp_get_playlist( $attr, $type ) {
 	</div>
 </script>
 	<?php endif ?>
-<div class="wp-playlist wp-<?php echo $type ?>-playlist wp-playlist-<?php echo $style ?>">
+<div class="wp-playlist wp-<?php echo $safe_type ?>-playlist wp-playlist-<?php echo $safe_style ?>">
 	<?php if ( 'audio' === $type ): ?>
 	<div class="wp-playlist-current-item"></div>
 	<?php endif ?>
-	<<?php echo $type ?> controls="controls" preload="metadata" width="<?php echo $theme_width ?>"></<?php echo $type ?>>
+	<<?php echo $safe_type ?> controls="controls" preload="metadata" width="<?php echo (int) $theme_width ?>"></<?php echo $safe_type ?>>
 	<div class="wp-playlist-next"></div>
 	<div class="wp-playlist-prev"></div>
 	<noscript>
