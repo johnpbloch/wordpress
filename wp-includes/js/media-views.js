@@ -2502,6 +2502,18 @@
 		}
 	});
 
+	/**
+	 * wp.media.view.MediaFrame.ImageDetails
+	 *
+	 * @constructor
+	 * @augments wp.media.view.MediaFrame.Select
+	 * @augments wp.media.view.MediaFrame
+	 * @augments wp.media.view.Frame
+	 * @augments wp.media.View
+	 * @augments wp.Backbone.View
+	 * @augments Backbone.View
+	 * @mixes wp.media.controller.StateMachine
+	 */
 	media.view.MediaFrame.ImageDetails = media.view.MediaFrame.Select.extend({
 		defaults: {
 			id:      'image',
@@ -2649,6 +2661,18 @@
 
 	});
 
+	/**
+	 * wp.media.view.MediaFrame.AudioDetails
+	 *
+	 * @constructor
+	 * @augments wp.media.view.MediaFrame.Select
+	 * @augments wp.media.view.MediaFrame
+	 * @augments wp.media.view.Frame
+	 * @augments wp.media.View
+	 * @augments wp.Backbone.View
+	 * @augments Backbone.View
+	 * @mixes wp.media.controller.StateMachine
+	 */
 	media.view.MediaFrame.AudioDetails = media.view.MediaFrame.Select.extend({
 		defaults: {
 			id:      'audio',
@@ -2792,6 +2816,18 @@
 		}
 	});
 
+	/**
+	 * wp.media.view.MediaFrame.VideoDetails
+	 *
+	 * @constructor
+	 * @augments wp.media.view.MediaFrame.Select
+	 * @augments wp.media.view.MediaFrame
+	 * @augments wp.media.view.Frame
+	 * @augments wp.media.View
+	 * @augments wp.Backbone.View
+	 * @augments Backbone.View
+	 * @mixes wp.media.controller.StateMachine
+	 */
 	media.view.MediaFrame.VideoDetails = media.view.MediaFrame.Select.extend({
 		defaults: {
 			id:      'video',
@@ -6092,6 +6128,16 @@
 		}
 	});
 
+	/**
+	 * wp.media.view.ImageDetails
+	 *
+	 * @contructor
+	 * @augments wp.media.view.Settings.AttachmentDisplay
+	 * @augments wp.media.view.Settings
+	 * @augments wp.media.View
+	 * @augments wp.Backbone.View
+	 * @augments Backbone.View
+	 */
 	media.view.ImageDetails = media.view.Settings.AttachmentDisplay.extend({
 		className: 'image-details',
 		template:  media.template('image-details'),
@@ -6138,6 +6184,16 @@
 		}
 	});
 
+	/**
+	 * wp.media.view.AudioDetails
+	 *
+	 * @contructor
+	 * @augments wp.media.view.Settings.AttachmentDisplay
+	 * @augments wp.media.view.Settings
+	 * @augments wp.media.View
+	 * @augments wp.Backbone.View
+	 * @augments Backbone.View
+	 */
 	media.view.AudioDetails = media.view.Settings.AttachmentDisplay.extend({
 		className: 'audio-details',
 		template:  media.template('audio-details'),
@@ -6147,8 +6203,6 @@
 
 			this.listenTo( this.controller, 'close', this.close );
 
-			// used in AttachmentDisplay.prototype.updateLinkTo
-			this.options.attachment = this.model.attachment;
 			media.view.Settings.AttachmentDisplay.prototype.initialize.apply( this, arguments );
 		},
 
@@ -6167,8 +6221,6 @@
 		close : function() {
 			this.mejs.pause();
 			this.remove();
-			delete this.mejs;
-			delete this.mejsInstance;
 		},
 
 		player : function (mejs) {
@@ -6187,7 +6239,7 @@
 			media.view.Settings.AttachmentDisplay.prototype.render.apply( this, arguments );
 			setTimeout( function() { self.resetFocus(); }, 10 );
 
-			this.mejsInstance = new MediaElementPlayer( this.$('audio').get(0), settings );
+			new MediaElementPlayer( this.$('audio').get(0), settings );
 
 			return this;
 		},
@@ -6197,6 +6249,16 @@
 		}
 	});
 
+	/**
+	 * wp.media.view.VideoDetails
+	 *
+	 * @contructor
+	 * @augments wp.media.view.Settings.AttachmentDisplay
+	 * @augments wp.media.view.Settings
+	 * @augments wp.media.View
+	 * @augments wp.Backbone.View
+	 * @augments Backbone.View
+	 */
 	media.view.VideoDetails = media.view.Settings.AttachmentDisplay.extend({
 		className: 'video-details',
 		template:  media.template('video-details'),
