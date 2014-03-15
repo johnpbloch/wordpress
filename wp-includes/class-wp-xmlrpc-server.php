@@ -1131,6 +1131,7 @@ class wp_xmlrpc_server extends IXR_Server {
 						return new IXR_Error( 401, __( 'Sorry, you are not allowed to assign a term to one of the given taxonomies.' ) );
 
 					$term_ids = $post_data['terms'][$taxonomy];
+					$terms[ $taxonomy ] = array();
 					foreach ( $term_ids as $term_id ) {
 						$term = get_term_by( 'id', $term_id, $taxonomy );
 
@@ -4846,7 +4847,8 @@ class wp_xmlrpc_server extends IXR_Server {
 				'custom_fields' => $this->get_custom_fields($entry['ID']),
 				'wp_post_format' => $post_format,
 				'date_modified' => $post_modified,
-				'date_modified_gmt' => $post_modified_gmt
+				'date_modified_gmt' => $post_modified_gmt,
+				'sticky' => ( $entry['post_type'] === 'post' && is_sticky( $entry['ID'] ) ),
 			);
 
 			$entry_index = count( $struct ) - 1;
