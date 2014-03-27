@@ -5,7 +5,9 @@
 /* TinyMCE widgets/containers */
 
 .mce-container,
-.mce-widget {
+.mce-container *,
+.mce-widget,
+.mce-widget * {
 	color: inherit;
 	font-family: inherit;
 }
@@ -37,7 +39,6 @@
 
 .mce-window .mce-window-head .mce-title {
 	color: #444;
-	font-family: 'Open Sans', sans-serif;
 	font-size: 18px;
 	font-weight: 600;
 	line-height: 36px;
@@ -197,8 +198,6 @@ div.mce-statusbar {
 	background: #eee;
 	background-image: -webkit-gradient(linear, right bottom, right top, from(#f6f6f6), to(#e3e3e3));
 	background-image: -webkit-linear-gradient(bottom, #f6f6f6, #e3e3e3);
-	background-image:    -moz-linear-gradient(bottom, #f6f6f6, #e3e3e3);
-	background-image:      -o-linear-gradient(bottom, #f6f6f6, #e3e3e3);
 	background-image: linear-gradient(to top, #f6f6f6, #e3e3e3);
 }
 
@@ -487,6 +486,14 @@ div.mce-menu .mce-menu-item-sep,
 }
 
 /* TinyMCE icons */
+.mce-ico {
+	font-family: 'tinymce', Arial;
+}
+
+.mce-btn-small .mce-ico {
+    font-family: 'tinymce-small', Arial;
+}
+
 .mce-toolbar .mce-ico {
 	color: #777;
 	line-height: 20px;
@@ -545,6 +552,7 @@ i.mce-i-wp_help,
 i.mce-i-wp-media-library,
 i.mce-i-ltr,
 i.mce-i-wp_page,
+i.mce-i-hr,
 .mce-close {
 	font: normal 20px/1 'dashicons';
 	padding: 0;
@@ -672,6 +680,10 @@ i.mce-i-ltr:before {
 
 i.mce-i-wp_page:before {
 	content: '\f105';
+}
+
+i.mce-i-hr:before {
+	content: '\f460';
 }
 
 .mce-close:before {
@@ -846,6 +858,7 @@ i.mce-i-wp_page:before {
 	padding: 2px 4px;
 	font: 12px/18px "Open Sans", sans-serif;
 	color: #464646;
+	cursor: pointer;
 	border: 1px solid #c3c3c3;
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
@@ -933,6 +946,7 @@ i.mce-i-wp_page:before {
 	top: 50%;
 	right: 50%;
 	z-index: 100105;
+	-webkit-transition: height 0.2s, margin-top 0.2s;
 	transition: height 0.2s, margin-top 0.2s;
 }
 
@@ -1153,6 +1167,7 @@ i.mce-i-wp_page:before {
 #wp-link .item-title {
 	display: inline-block;
 	width: 80%;
+	width: -webkit-calc(100% - 68px);
 	width: calc(100% - 68px);
 }
 
@@ -1243,6 +1258,7 @@ i.mce-i-wp_page:before {
 
 @media screen and ( max-height: 520px ) {
 	#wp-link-wrap {
+		-webkit-transition: none;
 		transition: none;
 	}
 
@@ -1272,6 +1288,7 @@ i.mce-i-wp_page:before {
 
 	#link-selector {
 		overflow: auto;
+		height: -webkit-calc(100% - 92px);
 		height: calc(100% - 92px);
 		padding-bottom: 2px;
 	}
