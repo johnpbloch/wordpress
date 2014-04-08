@@ -1843,6 +1843,9 @@
 				display:    state.get('displaySettings'),
 				dragInfo:   state.get('dragInfo'),
 
+				suggestedWidth:  state.get('suggestedWidth'),
+				suggestedHeight: state.get('suggestedHeight'),
+
 				AttachmentView: state.get('AttachmentView')
 			});
 		},
@@ -3310,6 +3313,18 @@
 				this.views.set( '.upload-inline-status', new media.view.UploaderStatus({
 					controller: this.controller
 				}) );
+			}
+		},
+
+		prepare: function() {
+			var suggestedWidth = this.controller.state().get('suggestedWidth'),
+				suggestedHeight = this.controller.state().get('suggestedHeight');
+
+			if ( suggestedWidth && suggestedHeight ) {
+				return {
+					suggestedWidth: suggestedWidth,
+					suggestedHeight: suggestedHeight
+				};
 			}
 		},
 		/**
@@ -5198,6 +5213,13 @@
 					priority: -40
 				}) );
 			}
+
+			if ( this.options.suggestedWidth && this.options.suggestedHeight ) {
+				this.toolbar.set( 'suggestedDimensions', new media.View({
+					el: $( '<div class="instructions">' + l10n.suggestedDimensions + ' ' + this.options.suggestedWidth + ' &times; ' + this.options.suggestedHeight + '</div>' )[0],
+					priority: -40
+				}) );
+			}
 		},
 
 		updateContent: function() {
@@ -6230,7 +6252,7 @@
 			};
 		},
 		onImageLoad: function() {
-			var imgOptions = this.controller.frame.options.imgSelectOptions;
+			var imgOptions = this.controller.get('imgSelectOptions');
 			if (typeof imgOptions === 'function') {
 				imgOptions = imgOptions(this.options.attachment, this.controller);
 			}
