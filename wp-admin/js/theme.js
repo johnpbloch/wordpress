@@ -756,9 +756,18 @@ themes.view.Preview = themes.view.Details.extend({
 			$( 'body' )
 				.addClass( 'theme-installer-active full-overlay-active' )
 				.on( 'keyup.overlay', function( event ) {
-					// Pressing the escape key closes the preview
+					// The escape key closes the preview
 					if ( event.keyCode === 27 ) {
 						self.close();
+					}
+					// The right arrow key, next theme
+					if ( event.keyCode === 39 ) {
+						self.nextTheme();
+					}
+
+					// The left arrow key, previous theme
+					if ( event.keyCode === 37 ) {
+						self.previousTheme();
 					}
 				});
 			$( '.close-full-overlay' ).focus();
@@ -1366,7 +1375,7 @@ themes.view.Installer = themes.view.Appearance.extend({
 		this.sort( sort );
 
 		// Trigger a router.naviagte update
-		themes.router.navigate( themes.router.baseUrl( '?sort=' + sort ) );
+		themes.router.navigate( themes.router.baseUrl( '?browse=' + sort ) );
 	},
 
 	sort: function( sort ) {
@@ -1528,7 +1537,7 @@ themes.view.Installer = themes.view.Appearance.extend({
 themes.InstallerRouter = Backbone.Router.extend({
 	routes: {
 		'theme-install.php?theme=:slug': 'preview',
-		'theme-install.php?sort=:sort': 'sort',
+		'theme-install.php?browse=:sort': 'sort',
 		'theme-install.php?upload': 'upload',
 		'theme-install.php?search=:query': 'search',
 		'': 'sort'
