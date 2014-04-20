@@ -98,6 +98,7 @@
 }
 
 .wp-playlist-caption {
+	display: block;
 	max-width: 88%;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -140,6 +141,11 @@
 	top: 0;
 	font-size: 14px;
 	line-height: 1.5;
+}
+
+.rtl .wp-playlist-item-length {
+	left: 3px;
+	right: auto;
 }
 
 .wp-playlist-tracks {
@@ -193,6 +199,12 @@
 	margin-right: 10px;
 	padding: 0;
 	border: 0;
+}
+
+.rtl .wp-playlist .wp-playlist-current-item img {
+	float: right;
+	margin-left: 10px;
+	margin-right: 0;
 }
 
 .wp-playlist-current-item .wp-playlist-item-title,
