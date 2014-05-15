@@ -576,22 +576,22 @@ function unregister_taxonomy_for_object_type( $taxonomy, $object_type ) {
 function get_objects_in_term( $term_ids, $taxonomies, $args = array() ) {
 	global $wpdb;
 
-	if ( ! is_array( $term_ids ) )
+	if ( ! is_array( $term_ids ) ) {
 		$term_ids = array( $term_ids );
-
-	if ( ! is_array( $taxonomies ) )
+	}
+	if ( ! is_array( $taxonomies ) ) {
 		$taxonomies = array( $taxonomies );
-
+	}
 	foreach ( (array) $taxonomies as $taxonomy ) {
-		if ( ! taxonomy_exists( $taxonomy ) )
+		if ( ! taxonomy_exists( $taxonomy ) ) {
 			return new WP_Error( 'invalid_taxonomy', __( 'Invalid taxonomy' ) );
+		}
 	}
 
 	$defaults = array( 'order' => 'ASC' );
 	$args = wp_parse_args( $args, $defaults );
-	extract( $args, EXTR_SKIP );
 
-	$order = ( 'desc' == strtolower( $order ) ) ? 'DESC' : 'ASC';
+	$order = ( 'desc' == strtolower( $args['order'] ) ) ? 'DESC' : 'ASC';
 
 	$term_ids = array_map('intval', $term_ids );
 
@@ -600,9 +600,9 @@ function get_objects_in_term( $term_ids, $taxonomies, $args = array() ) {
 
 	$object_ids = $wpdb->get_col("SELECT tr.object_id FROM $wpdb->term_relationships AS tr INNER JOIN $wpdb->term_taxonomy AS tt ON tr.term_taxonomy_id = tt.term_taxonomy_id WHERE tt.taxonomy IN ($taxonomies) AND tt.term_id IN ($term_ids) ORDER BY tr.object_id $order");
 
-	if ( ! $object_ids )
+	if ( ! $object_ids ){
 		return array();
-
+	}
 	return $object_ids;
 }
 
@@ -738,17 +738,20 @@ class WP_Tax_Query {
 		foreach ( $this->queries as $index => $query ) {
 			$this->clean_query( $query );
 
-			if ( is_wp_error( $query ) )
+			if ( is_wp_error( $query ) ) {
 				return self::$no_results;
+			}
 
-			extract( $query );
+			$terms = $query['terms'];
+			$operator = $query['operator'];
 
 			if ( 'IN' == $operator ) {
 
 				if ( empty( $terms ) ) {
 					if ( 'OR' == $this->relation ) {
-						if ( ( $index + 1 === $count ) && empty( $where ) )
+						if ( ( $index + 1 === $count ) && empty( $where ) ) {
 							return self::$no_results;
+						}
 						continue;
 					} else {
 						return self::$no_results;
@@ -766,8 +769,9 @@ class WP_Tax_Query {
 				$where[] = "$alias.term_taxonomy_id $operator ($terms)";
 			} elseif ( 'NOT IN' == $operator ) {
 
-				if ( empty( $terms ) )
+				if ( empty( $terms ) ) {
 					continue;
+				}
 
 				$terms = implode( ',', $terms );
 
@@ -778,8 +782,9 @@ class WP_Tax_Query {
 				)";
 			} elseif ( 'AND' == $operator ) {
 
-				if ( empty( $terms ) )
+				if ( empty( $terms ) ) {
 					continue;
+				}
 
 				$num_terms = count( $terms );
 
@@ -796,11 +801,11 @@ class WP_Tax_Query {
 			$i++;
 		}
 
-		if ( ! empty( $where ) )
+		if ( ! empty( $where ) ) {
 			$where = ' AND ( ' . implode( " $this->relation ", $where ) . ' )';
-		else
+		} else {
 			$where = '';
-
+		}
 		return compact( 'join', 'where' );
 	}
 
