@@ -685,9 +685,8 @@ function wp_generate_tag_cloud( $tags, $args = '' ) {
 	);
 
 	$args = wp_parse_args( $args, $defaults );
-	extract( $args, EXTR_SKIP );
 
-	$return = ( 'array' === $format ) ? array() : '';
+	$return = ( 'array' === $args['format'] ) ? array() : '';
 
 	if ( empty( $tags ) ) {
 		return $return;
@@ -729,37 +728,37 @@ function wp_generate_tag_cloud( $tags, $args = '' ) {
 		$tags = $tags_sorted;
 		unset( $tags_sorted );
 	} else {
-		if ( 'RAND' === $order ) {
+		if ( 'RAND' === $args['order'] ) {
 			shuffle( $tags );
 		} else {
 			// SQL cannot save you; this is a second (potentially different) sort on a subset of data.
-			if ( 'name' === $orderby ) {
+			if ( 'name' === $args['orderby'] ) {
 				uasort( $tags, '_wp_object_name_sort_cb' );
 			} else {
 				uasort( $tags, '_wp_object_count_sort_cb' );
 			}
 
-			if ( 'DESC' === $order ) {
+			if ( 'DESC' === $args['order'] ) {
 				$tags = array_reverse( $tags, true );
 			}
 		}
 	}
 
-	if ( $number > 0 )
-		$tags = array_slice($tags, 0, $number);
+	if ( $args['number'] > 0 )
+		$tags = array_slice( $tags, 0, $args['number'] );
 
 	$counts = array();
 	$real_counts = array(); // For the alt tag
 	foreach ( (array) $tags as $key => $tag ) {
 		$real_counts[ $key ] = $tag->count;
-		$counts[ $key ] = $topic_count_scale_callback($tag->count);
+		$counts[ $key ] = call_user_func( $args['topic_count_scale_callback'], $tag->count );
 	}
 
 	$min_count = min( $counts );
 	$spread = max( $counts ) - $min_count;
 	if ( $spread <= 0 )
 		$spread = 1;
-	$font_spread = $largest - $smallest;
+	$font_spread = $args['largest'] - $args['smallest'];
 	if ( $font_spread < 0 )
 		$font_spread = 1;
 	$font_step = $font_spread / $spread;
@@ -776,15 +775,15 @@ function wp_generate_tag_cloud( $tags, $args = '' ) {
 		if ( $translate_nooped_plural ) {
 			$title_attribute = sprintf( translate_nooped_plural( $translate_nooped_plural, $real_count ), number_format_i18n( $real_count ) );
 		} else {
-			$title_attribute = call_user_func( $topic_count_text_callback, $real_count, $tag, $args );
+			$title_attribute = call_user_func( $args['topic_count_text_callback'], $real_count, $tag, $args );
 		}
 
 		$a[] = "<a href='$tag_link' class='tag-link-$tag_id' title='" . esc_attr( $title_attribute ) . "' style='font-size: " .
-			str_replace( ',', '.', ( $smallest + ( ( $count - $min_count ) * $font_step ) ) )
-			. "$unit;'>$tag_name</a>";
+			str_replace( ',', '.', ( $args['smallest'] + ( ( $count - $min_count ) * $font_step ) ) )
+			. $args['unit'] . ";'>$tag_name</a>";
 	}
 
-	switch ( $format ) :
+	switch ( $args['format'] ) :
 	case 'array' :
 		$return =& $a;
 		break;
@@ -794,11 +793,11 @@ function wp_generate_tag_cloud( $tags, $args = '' ) {
 		$return .= "</li>\n</ul>\n";
 		break;
 	default :
-		$return = join( $separator, $a );
+		$return = join( $args['separator'], $a );
 		break;
 	endswitch;
 
-	if ( $filter ) {
+	if ( $args['filter'] ) {
 		/**
 		 * Filter the generated output of a tag cloud.
 		 *
@@ -963,15 +962,15 @@ class Walker_Category extends Walker {
 	 * @param int    $id       ID of the current category.
 	 */
 	function start_el( &$output, $category, $depth = 0, $args = array(), $id = 0 ) {
-		extract($args);
-
-		$cat_name = esc_attr( $category->name );
-
 		/** This filter is documented in wp-includes/category-template.php */
-		$cat_name = apply_filters( 'list_cats', $cat_name, $category );
+		$cat_name = apply_filters(
+			'list_cats',
+			esc_attr( $category->name ),
+			$category
+		);
 
-		$link = '<a href="' . esc_url( get_term_link($category) ) . '" ';
-		if ( $use_desc_for_title == 0 || empty($category->description) ) {
+		$link = '<a href="' . esc_url( get_term_link( $category ) ) . '" ';
+		if ( $args['use_desc_for_title'] == 0 || empty( $category->description ) ) {
 			$link .= '';
 		} else {
 			/**
@@ -988,47 +987,50 @@ class Walker_Category extends Walker {
 		$link .= '>';
 		$link .= $cat_name . '</a>';
 
-		if ( !empty($feed_image) || !empty($feed) ) {
+		if ( ! empty( $args['feed_image'] ) || ! empty( $args['feed'] ) ) {
 			$link .= ' ';
 
-			if ( empty($feed_image) )
+			if ( empty( $args['feed_image'] ) ) {
 				$link .= '(';
+			}
 
-			$link .= '<a href="' . esc_url( get_term_feed_link( $category->term_id, $category->taxonomy, $feed_type ) ) . '"';
+			$link .= '<a href="' . esc_url( get_term_feed_link( $category->term_id, $category->taxonomy, $args['feed_type'] ) ) . '"';
 
-			if ( empty($feed) ) {
+			if ( empty( $args['feed'] ) ) {
 				$alt = ' alt="' . sprintf(__( 'Feed for all posts filed under %s' ), $cat_name ) . '"';
 			} else {
-				$alt = ' alt="' . $feed . '"';
-				$name = $feed;
-				$link .= $title;
+				$alt = ' alt="' . $args['feed'] . '"';
+				$name = $args['feed'];
+				$link .= $args['title'];
 			}
 
 			$link .= '>';
 
-			if ( empty($feed_image) )
+			if ( empty( $args['feed_image'] ) ) {
 				$link .= $name;
-			else
-				$link .= "<img src='$feed_image'$alt" . ' />';
-
+			} else {
+				$link .= "<img src='" . $args['feed_image'] . "'$alt" . ' />';
+			}
 			$link .= '</a>';
 
-			if ( empty($feed_image) )
+			if ( empty( $args['feed_image'] ) ) {
 				$link .= ')';
+			}
 		}
 
-		if ( !empty($show_count) )
+		if ( ! empty( $args['show_count'] ) ) {
 			$link .= ' (' . number_format_i18n( $category->count ) . ')';
-
+		}
 		if ( 'list' == $args['style'] ) {
 			$output .= "\t<li";
 			$class = 'cat-item cat-item-' . $category->term_id;
-			if ( !empty($current_category) ) {
-				$_current_category = get_term( $current_category, $category->taxonomy );
-				if ( $category->term_id == $current_category )
+			if ( ! empty( $args['current_category'] ) ) {
+				$_current_category = get_term( $args['current_category'], $category->taxonomy );
+				if ( $category->term_id == $args['current_category'] ) {
 					$class .=  ' current-cat';
-				elseif ( $category->term_id == $_current_category->parent )
+				} elseif ( $category->term_id == $_current_category->parent ) {
 					$class .=  ' current-cat-parent';
+				}
 			}
 			$output .=  ' class="' . $class . '"';
 			$output .= ">$link\n";
