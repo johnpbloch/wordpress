@@ -929,8 +929,6 @@ class WP_Widget_RSS extends WP_Widget {
 		if ( isset($instance['error']) && $instance['error'] )
 			return;
 
-		extract($args, EXTR_SKIP);
-
 		$url = ! empty( $instance['url'] ) ? $instance['url'] : '';
 		while ( stristr($url, 'http') != $url )
 			$url = substr($url, 1);
@@ -967,11 +965,12 @@ class WP_Widget_RSS extends WP_Widget {
 		if ( $title )
 			$title = "<a class='rsswidget' href='$url' title='" . esc_attr__( 'Syndicate this content' ) ."'><img style='border:0' width='14' height='14' src='$icon' alt='RSS' /></a> <a class='rsswidget' href='$link' title='$desc'>$title</a>";
 
-		echo $before_widget;
-		if ( $title )
-			echo $before_title . $title . $after_title;
+		echo $args['before_widget'];
+		if ( $title ) {
+			echo $args['before_title'] . $title . $args['after_title'];
+		}
 		wp_widget_rss_output( $rss, $instance );
-		echo $after_widget;
+		echo $args['after_widget'];
 
 		if ( ! is_wp_error($rss) )
 			$rss->__destruct();
@@ -1017,16 +1016,15 @@ function wp_widget_rss_output( $rss, $args = array() ) {
 		return;
 	}
 
-	$default_args = array( 'show_author' => 0, 'show_date' => 0, 'show_summary' => 0 );
+	$default_args = array( 'show_author' => 0, 'show_date' => 0, 'show_summary' => 0, 'items' => 0 );
 	$args = wp_parse_args( $args, $default_args );
-	extract( $args, EXTR_SKIP );
 
-	$items = (int) $items;
+	$items = (int) $args['items'];
 	if ( $items < 1 || 20 < $items )
 		$items = 10;
-	$show_summary  = (int) $show_summary;
-	$show_author   = (int) $show_author;
-	$show_date     = (int) $show_date;
+	$show_summary  = (int) $args['show_summary'];
+	$show_author   = (int) $args['show_author'];
+	$show_date     = (int) $args['show_date'];
 
 	if ( !$rss->get_item_quantity() ) {
 		echo '<ul><li>' . __( 'An error has occurred, which probably means the feed is down. Try again later.' ) . '</li></ul>';
