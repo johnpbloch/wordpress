@@ -70,19 +70,28 @@ class Walker_Category_Checklist extends Walker {
 	 * @param int    $id       ID of the current term.
 	 */
 	function start_el( &$output, $category, $depth = 0, $args = array(), $id = 0 ) {
-		extract($args);
-		if ( empty($taxonomy) )
+		if ( empty( $args['taxonomy'] ) ) {
 			$taxonomy = 'category';
+		} else {
+			$taxonomy = $args['taxonomy'];
+		}
 
-		if ( $taxonomy == 'category' )
+		if ( $taxonomy == 'category' ) {
 			$name = 'post_category';
-		else
-			$name = 'tax_input['.$taxonomy.']';
+		} else {
+			$name = 'tax_input[' . $taxonomy . ']';
+		}
+		$args['popular_cats'] = empty( $args['popular_cats'] ) ? array() : $args['popular_cats'];
+		$class = in_array( $category->term_id, $args['popular_cats'] ) ? ' class="popular-category"' : '';
 
-		$class = in_array( $category->term_id, $popular_cats ) ? ' class="popular-category"' : '';
+		$args['selected_cats'] = empty( $args['selected_cats'] ) ? array() : $args['selected_cats'];
 
 		/** This filter is documented in wp-includes/category-template.php */
-		$output .= "\n<li id='{$taxonomy}-{$category->term_id}'$class>" . '<label class="selectit"><input value="' . $category->term_id . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '"' . checked( in_array( $category->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters( 'the_category', $category->name ) ) . '</label>';
+		$output .= "\n<li id='{$taxonomy}-{$category->term_id}'$class>" .
+			'<label class="selectit"><input value="' . $category->term_id . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '"' .
+			checked( in_array( $category->term_id, $args['selected_cats'] ), true, false ) .
+			disabled( empty( $args['disabled'] ), false, false ) . ' /> ' .
+			esc_html( apply_filters( 'the_category', $category->name ) ) . '</label>';
 	}
 
 	/**
@@ -136,7 +145,7 @@ function wp_category_checklist( $post_id = 0, $descendants_and_self = 0, $select
  * @param int $post_id
  * @param array $args
  */
-function wp_terms_checklist($post_id = 0, $args = array()) {
+function wp_terms_checklist( $post_id = 0, $args = array() ) {
  	$defaults = array(
 		'descendants_and_self' => 0,
 		'selected_cats' => false,
@@ -156,41 +165,55 @@ function wp_terms_checklist($post_id = 0, $args = array()) {
 	 * @param array $args    An array of arguments.
 	 * @param int   $post_id The post ID.
 	 */
-	$args = apply_filters( 'wp_terms_checklist_args', $args, $post_id );
+	$params = apply_filters( 'wp_terms_checklist_args', $args, $post_id );
 
-	extract( wp_parse_args($args, $defaults), EXTR_SKIP );
+	$r = wp_parse_args( $params, $defaults );
 
-	if ( empty($walker) || !is_a($walker, 'Walker') )
+	if ( empty( $r['walker'] ) || ! is_a( $r['walker'], 'Walker' ) ) {
 		$walker = new Walker_Category_Checklist;
+	} else {
+		$walker = $r['walker'];
+	}
 
-	$descendants_and_self = (int) $descendants_and_self;
+	$taxonomy = $r['taxonomy'];
+	$descendants_and_self = (int) $r['descendants_and_self'];
 
-	$args = array('taxonomy' => $taxonomy);
+	$args = array( 'taxonomy' => $taxonomy );
 
-	$tax = get_taxonomy($taxonomy);
-	$args['disabled'] = !current_user_can($tax->cap->assign_terms);
+	$tax = get_taxonomy( $taxonomy );
+	$args['disabled'] = ! current_user_can( $tax->cap->assign_terms );
 
-	if ( is_array( $selected_cats ) )
-		$args['selected_cats'] = $selected_cats;
-	elseif ( $post_id )
-		$args['selected_cats'] = wp_get_object_terms($post_id, $taxonomy, array_merge($args, array('fields' => 'ids')));
-	else
+	if ( is_array( $r['selected_cats'] ) ) {
+		$args['selected_cats'] = $r['selected_cats'];
+	} elseif ( $post_id ) {
+		$args['selected_cats'] = wp_get_object_terms( $post_id, $taxonomy, array_merge( $args, array( 'fields' => 'ids' ) ) );
+	} else {
 		$args['selected_cats'] = array();
-
-	if ( is_array( $popular_cats ) )
-		$args['popular_cats'] = $popular_cats;
-	else
-		$args['popular_cats'] = get_terms( $taxonomy, array( 'fields' => 'ids', 'orderby' => 'count', 'order' => 'DESC', 'number' => 10, 'hierarchical' => false ) );
-
+	}
+	if ( is_array( $r['popular_cats'] ) ) {
+		$args['popular_cats'] = $r['popular_cats'];
+	} else {
+		$args['popular_cats'] = get_terms( $taxonomy, array(
+			'fields' => 'ids',
+			'orderby' => 'count',
+			'order' => 'DESC',
+			'number' => 10,
+			'hierarchical' => false
+		) );
+	}
 	if ( $descendants_and_self ) {
-		$categories = (array) get_terms($taxonomy, array( 'child_of' => $descendants_and_self, 'hierarchical' => 0, 'hide_empty' => 0 ) );
+		$categories = (array) get_terms( $taxonomy, array(
+			'child_of' => $descendants_and_self,
+			'hierarchical' => 0,
+			'hide_empty' => 0
+		) );
 		$self = get_term( $descendants_and_self, $taxonomy );
 		array_unshift( $categories, $self );
 	} else {
-		$categories = (array) get_terms($taxonomy, array('get' => 'all'));
+		$categories = (array) get_terms( $taxonomy, array( 'get' => 'all' ) );
 	}
 
-	if ( $checked_ontop ) {
+	if ( $r['checked_ontop'] ) {
 		// Post process $categories rather than adding an exclude to the get_terms() query to keep the query the same across all posts (for any query cache)
 		$checked_categories = array();
 		$keys = array_keys( $categories );
@@ -203,10 +226,10 @@ function wp_terms_checklist($post_id = 0, $args = array()) {
 		}
 
 		// Put checked cats on top
-		echo call_user_func_array(array(&$walker, 'walk'), array($checked_categories, 0, $args));
+		echo call_user_func_array( array( $walker, 'walk' ), array( $checked_categories, 0, $args ) );
 	}
 	// Then the rest of them
-	echo call_user_func_array(array(&$walker, 'walk'), array($categories, 0, $args));
+	echo call_user_func_array( array( $walker, 'walk' ), array( $categories, 0, $args ) );
 }
 
 /**
