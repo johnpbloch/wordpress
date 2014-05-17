@@ -190,6 +190,8 @@ class WP_Upgrader {
 		);
 
 		$args = wp_parse_args($args, $defaults);
+		// these were previously extract()'d
+		$source = $args['source'];
 		$destination = $args['destination'];
 		$clear_destination = $args['clear_destination'];
 
