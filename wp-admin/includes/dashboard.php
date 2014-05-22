@@ -218,11 +218,6 @@ function wp_dashboard() {
  * @since 2.7.0
  */
 function wp_dashboard_right_now() {
-	$theme = wp_get_theme();
-	if ( current_user_can( 'switch_themes' ) )
-		$theme_name = sprintf( '<a href="themes.php">%1$s</a>', $theme->display('Name') );
-	else
-		$theme_name = $theme->display('Name');
 ?>
 	<div class="main">
 	<ul>
@@ -712,7 +707,6 @@ function wp_dashboard_recent_posts( $args ) {
 
 		echo '<ul>';
 
-		$i = 0;
 		$today    = date( 'Y-m-d', current_time( 'timestamp' ) );
 		$tomorrow = date( 'Y-m-d', strtotime( '+1 day', current_time( 'timestamp' ) ) );
 
