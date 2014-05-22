@@ -1008,7 +1008,7 @@ function gallery_shortcode( $attr ) {
 
 	$selector = "gallery-{$instance}";
 
-	$gallery_style = $gallery_div = '';
+	$gallery_style = '';
 
 	/**
 	 * Filter whether to print default gallery styles.
@@ -3030,7 +3030,6 @@ function get_post_galleries( $post, $html = true ) {
 		foreach ( $matches as $shortcode ) {
 			if ( 'gallery' === $shortcode[2] ) {
 				$srcs = array();
-				$count = 1;
 
 				$gallery = do_shortcode_tag( $shortcode );
 				if ( $html ) {
