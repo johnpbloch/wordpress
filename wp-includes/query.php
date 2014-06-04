@@ -1512,7 +1512,7 @@ class WP_Query {
 		} else {
 			// Look for archive queries. Dates, categories, authors, search, post type archives.
 
-			if ( ! is_admin() & isset( $this->query['s'] ) ) {
+			if ( isset( $this->query['s'] ) ) {
 				$this->is_search = true;
 			}
 
@@ -2482,7 +2482,7 @@ class WP_Query {
 		// If a search pattern is specified, load the posts that match.
 		if ( ! empty( $q['s'] ) ) {
 			$search = $this->parse_search( $q );
-		} elseif ( $this->is_search ) {
+		} elseif ( ! $this->is_admin && $this->is_search ) {
 			$search = ' AND 0';
 		}
 
@@ -3723,7 +3723,7 @@ class WP_Query {
 			$page_for_posts = get_option('page_for_posts');
 			$this->queried_object = get_post( $page_for_posts );
 			$this->queried_object_id = (int) $this->queried_object->ID;
-		} elseif ( $this->is_singular && !is_null($this->post) ) {
+		} elseif ( $this->is_singular && ! empty( $this->post ) ) {
 			$this->queried_object = $this->post;
 			$this->queried_object_id = (int) $this->post->ID;
 		} elseif ( $this->is_author ) {
