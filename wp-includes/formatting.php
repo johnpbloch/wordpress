@@ -79,8 +79,8 @@ function wptexturize($text) {
 			$cockney = $cockneyreplace = array();
 		}
 
-		$static_characters = array_merge( array( '---', ' -- ', '--', ' - ', 'xn&#8211;', '...', '``', '\'\'', ' (tm)' ), $cockney );
-		$static_replacements = array_merge( array( $em_dash, ' ' . $em_dash . ' ', $en_dash, ' ' . $en_dash . ' ', 'xn--', '&#8230;', $opening_quote, $closing_quote, ' &#8482;' ), $cockneyreplace );
+		$static_characters = array_merge( array( '---', '...', '``', '\'\'', ' (tm)' ), $cockney );
+		$static_replacements = array_merge( array( $em_dash, '&#8230;', $opening_quote, $closing_quote, ' &#8482;' ), $cockneyreplace );
 
 		$spaces = wp_spaces_regexp();
 
@@ -127,6 +127,11 @@ function wptexturize($text) {
 		if ( "'" !== $closing_single_quote ) {
 			$dynamic[ '/\'(?=\Z|\.|' . $spaces . ')/' ] = $closing_single_quote;
 		}
+
+		// Dashes and spaces
+		$dynamic[ '/(?<=' . $spaces . ')--(?=' . $spaces . ')/' ] = $em_dash;
+		$dynamic[ '/(?<!xn)--/' ] = $en_dash;
+		$dynamic[ '/(?<=' . $spaces . ')-(?=' . $spaces . ')/' ] = $en_dash;
 
 		$dynamic_characters = array_keys( $dynamic );
 		$dynamic_replacements = array_values( $dynamic );
@@ -1912,7 +1917,7 @@ function translate_smiley( $matches ) {
 	 */
 	$src_url = apply_filters( 'smilies_src', includes_url( "images/smilies/$img" ), $img, site_url() );
 
-	return sprintf( ' <img src="%s" alt="%s" class="wp-smiley" /> ', esc_url( $src_url ), esc_attr( $smiley ) );
+	return sprintf( '<img src="%s" alt="%s" class="wp-smiley" />', esc_url( $src_url ), esc_attr( $smiley ) );
 }
 
 /**
