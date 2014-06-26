@@ -3492,6 +3492,13 @@
 					$el.hide();
 				}
 			});
+
+			// https://core.trac.wordpress.org/ticket/27341
+			_.delay( function() {
+				if ( '0' === $el.css('opacity') && $el.is(':visible') ) {
+					$el.hide();
+				}
+			}, 500 );
 		}
 	});
 
@@ -5366,6 +5373,7 @@
 	media.view.Search = media.View.extend({
 		tagName:   'input',
 		className: 'search',
+		id:        'media-search-input',
 
 		attributes: {
 			type:        'search',
@@ -5407,6 +5415,7 @@
 	media.view.AttachmentFilters = media.View.extend({
 		tagName:   'select',
 		className: 'attachment-filters',
+		id:        'media-attachment-filters',
 
 		events: {
 			change: 'change'
@@ -5632,7 +5641,7 @@
 		},
 
 		createToolbar: function() {
-			var filters, FiltersConstructor;
+			var filters, FiltersConstructor, screenReaderText;
 
 			/**
 			 * @member {wp.media.view.Toolbar}
@@ -5658,6 +5667,9 @@
 					model:      this.collection.props,
 					priority:   -80
 				}).render() );
+
+				screenReaderText = $( '<label class="screen-reader-text" for="media-attachment-filters">' + l10n.select + '</label>' );
+				this.toolbar.get( 'filters' ).$el.before( screenReaderText );
 			}
 
 			this.toolbar.set( 'spinner', new media.view.Spinner({
@@ -5670,6 +5682,8 @@
 					model:      this.collection.props,
 					priority:   60
 				}).render() );
+				screenReaderText = $( '<label class="screen-reader-text" for="media-search-input">' + l10n.search + '</label>' );
+				this.toolbar.get( 'search' ).$el.before( screenReaderText );
 			}
 
 			if ( this.options.dragInfo ) {
