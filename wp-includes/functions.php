@@ -3003,7 +3003,7 @@ function dead_db() {
  * @return int An nonnegative integer
  */
 function absint( $maybeint ) {
-	return min( abs( (int) $maybeint ), PHP_INT_MAX );
+	return abs( intval( $maybeint ) );
 }
 
 /**
