@@ -140,7 +140,7 @@ function wp_print_media_templates() {
 
 	<script type="text/html" id="tmpl-media-modal">
 		<div class="<?php echo $class; ?>">
-			<a class="media-modal-close" href="#" title="<?php esc_attr_e('Close'); ?>"><span class="media-modal-icon"></span></a>
+			<a class="media-modal-close" href="#"><span class="media-modal-icon"><span class="screen-reader-text"><?php _e( 'Close media panel' ); ?></span></span></a>
 			<div class="media-modal-content"></div>
 		</div>
 		<div class="media-modal-backdrop"></div>
@@ -177,8 +177,9 @@ function wp_print_media_templates() {
 
 		<?php else : ?>
 			<div class="upload-ui">
-				<h3 class="upload-instructions drop-instructions"><?php _e( 'Drop files anywhere to upload' ); ?></h3>
-				<a href="#" class="browser button button-hero"><?php _e( 'Select Files' ); ?></a>
+				<h3 class="upload-instructions drop-instructions"><?php _e( 'Drop files here' ); ?></h3>
+				<p><?php _e( 'or' ); ?></p>
+				<a href="#" class="browser button"><?php _e( 'Select Files' ); ?></a>
 			</div>
 
 			<div class="upload-inline-status"></div>
