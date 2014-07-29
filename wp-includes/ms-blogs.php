@@ -874,11 +874,13 @@ function get_last_updated( $deprecated = '', $start = 0, $quantity = 40 ) {
  */
 function _update_blog_date_on_post_publish( $new_status, $old_status, $post ) {
 	$post_type_obj = get_post_type_object( $post->post_type );
-	if ( ! $post_type_obj->public )
+	if ( ! $post_type_obj || ! $post_type_obj->public ) {
 		return;
+	}
 
-	if ( 'publish' != $new_status && 'publish' != $old_status )
+	if ( 'publish' != $new_status && 'publish' != $old_status ) {
 		return;
+	}
 
 	// Post was freshly published, published post was saved, or published post was unpublished.
 
@@ -896,11 +898,13 @@ function _update_blog_date_on_post_delete( $post_id ) {
 	$post = get_post( $post_id );
 
 	$post_type_obj = get_post_type_object( $post->post_type );
-	if ( ! $post_type_obj->public )
+	if ( ! $post_type_obj || ! $post_type_obj->public ) {
 		return;
+	}
 
-	if ( 'publish' != $post->post_status )
+	if ( 'publish' != $post->post_status ) {
 		return;
+	}
 
 	wpmu_update_blogs_date();
 }
@@ -908,7 +912,7 @@ function _update_blog_date_on_post_delete( $post_id ) {
 /**
  * Handler for updating the blog posts count date when a post is deleted.
  *
- * @since 4.0
+ * @since 4.0.0
  *
  * @param int $post_id Post ID.
  */
@@ -923,7 +927,7 @@ function _update_posts_count_on_delete( $post_id ) {
 /**
  * Handler for updating the blog posts count date when a post status changes.
  *
- * @since 4.0
+ * @since 4.0.0
  *
  * @param string $new_status The status the post is changing to.
  * @param string $old_status The status the post is changing from.
