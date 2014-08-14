@@ -43,10 +43,11 @@ final class WP_Customize_Manager {
 	 */
 	public $widgets;
 
-	protected $settings = array();
-	protected $panels   = array();
-	protected $sections = array();
-	protected $controls = array();
+	protected $settings   = array();
+	protected $containers = array();
+	protected $panels     = array();
+	protected $sections   = array();
+	protected $controls   = array();
 
 	protected $nonce_tick;
 
@@ -66,6 +67,7 @@ final class WP_Customize_Manager {
 	 */
 	public function __construct() {
 		require( ABSPATH . WPINC . '/class-wp-customize-setting.php' );
+		require( ABSPATH . WPINC . '/class-wp-customize-panel.php' );
 		require( ABSPATH . WPINC . '/class-wp-customize-section.php' );
 		require( ABSPATH . WPINC . '/class-wp-customize-control.php' );
 		require( ABSPATH . WPINC . '/class-wp-customize-widgets.php' );
@@ -302,6 +304,17 @@ final class WP_Customize_Manager {
 	 */
 	public function controls() {
 		return $this->controls;
+	}
+
+	/**
+	 * Get the registered containers.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @return array
+	 */
+	public function containers() {
+		return $this->containers;
 	}
 
 	/**
@@ -890,6 +903,10 @@ final class WP_Customize_Manager {
 			$panels[] = $panel;
 		}
 		$this->panels = $panels;
+
+		// Sort panels and top-level sections together.
+		$this->containers = array_merge( $this->panels, $this->sections );
+		uasort( $this->containers, array( $this, '_cmp_priority' ) );
 	}
 
 	/**
