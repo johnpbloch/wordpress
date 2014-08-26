@@ -1045,6 +1045,7 @@ class Theme_Upgrader extends WP_Upgrader {
 				'destination' => get_theme_root( $theme ),
 				'clear_destination' => true,
 				'clear_working' => true,
+				'is_multi' => true,
 				'hook_extra' => array(
 					'theme' => $theme
 				),
@@ -1256,7 +1257,9 @@ class Language_Pack_Upgrader extends WP_Upgrader {
 		if ( 'upgrader_process_complete' == current_filter() )
 			$this->skin->feedback( 'starting_upgrade' );
 
-		add_filter( 'upgrader_source_selection', array( &$this, 'check_package' ), 10, 3 );
+		// Remove any existing package checks and then set the new one for translations, #WP29230.
+		remove_all_filters( 'upgrader_source_selection' );
+		add_filter( 'upgrader_source_selection', array( $this, 'check_package' ), 10, 2 );
 
 		$this->skin->header();
 
@@ -1320,7 +1323,7 @@ class Language_Pack_Upgrader extends WP_Upgrader {
 		$this->skin->footer();
 
 		// Clean up our hooks, in case something else does an upgrade on this connection.
-		remove_filter( 'upgrader_source_selection', array( &$this, 'check_package' ), 10, 2 );
+		remove_filter( 'upgrader_source_selection', array( $this, 'check_package' ) );
 
 		if ( $parsed_args['clear_update_cache'] ) {
 			wp_clean_themes_cache( true );
