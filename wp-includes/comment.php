@@ -7,49 +7,49 @@
  */
 
 /**
- * Checks whether a comment passes internal checks to be allowed to add.
+ * Check whether a comment passes internal checks to be allowed to add.
  *
- * If comment moderation is set in the administration, then all comments,
- * regardless of their type and whitelist will be set to false. If the number of
- * links exceeds the amount in the administration, then the check fails. If any
- * of the parameter contents match the blacklist of words, then the check fails.
+ * If manual comment moderation is set in the administration, then all checks,
+ * regardless of their type and whitelist, will fail and the function will
+ * return false.
  *
  * If the number of links exceeds the amount in the administration, then the
  * check fails. If any of the parameter contents match the blacklist of words,
  * then the check fails.
  *
- * If the comment author was approved before, then the comment is
- * automatically whitelisted.
+ * If the comment author was approved before, then the comment is automatically
+ * whitelisted.
  *
- * If none of the checks fail, then the failback is to set the check to pass
- * (return true).
+ * If all checks pass, the function will return true.
  *
  * @since 1.2.0
- * @uses $wpdb
  *
- * @param string $author Comment Author's name
- * @param string $email Comment Author's email
- * @param string $url Comment Author's URL
- * @param string $comment Comment contents
- * @param string $user_ip Comment Author's IP address
- * @param string $user_agent Comment Author's User Agent
- * @param string $comment_type Comment type, either user submitted comment,
- *		trackback, or pingback
- * @return bool Whether the checks passed (true) and the comments should be
- *		displayed or set to moderated
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ *
+ * @param string $author       Comment author name.
+ * @param string $email        Comment author email.
+ * @param string $url          Comment author URL.
+ * @param string $comment      Content of the comment.
+ * @param string $user_ip      Comment author IP address.
+ * @param string $user_agent   Comment author User-Agent.
+ * @param string $comment_type Comment type, either user-submitted comment,
+ *		                       trackback, or pingback.
+ * @return bool If all checks pass, true, otherwise false.
  */
 function check_comment($author, $email, $url, $comment, $user_ip, $user_agent, $comment_type) {
 	global $wpdb;
 
+	// If manual moderation is enabled, skip all checks and return false.
 	if ( 1 == get_option('comment_moderation') )
-		return false; // If moderation is set to manual
+		return false;
 
 	/** This filter is documented in wp-includes/comment-template.php */
 	$comment = apply_filters( 'comment_text', $comment );
 
-	// Check # of external links
+	// Check for the number of external links if a max allowed number is set.
 	if ( $max_links = get_option( 'comment_max_links' ) ) {
 		$num_links = preg_match_all( '/<a [^>]*href/i', $comment, $out );
+
 		/**
 		 * Filter the maximum number of links allowed in a comment.
 		 *
@@ -59,25 +59,38 @@ function check_comment($author, $email, $url, $comment, $user_ip, $user_agent, $
 		 * @param string $url       Comment author's URL. Included in allowed links total.
 		 */
 		$num_links = apply_filters( 'comment_max_links_url', $num_links, $url );
+
+		/*
+		 * If the number of links in the comment exceeds the allowed amount,
+		 * fail the check by returning false.
+		 */
 		if ( $num_links >= $max_links )
 			return false;
 	}
 
 	$mod_keys = trim(get_option('moderation_keys'));
+
+	// If moderation 'keys' (keywords) are set, process them.
 	if ( !empty($mod_keys) ) {
 		$words = explode("\n", $mod_keys );
 
 		foreach ( (array) $words as $word) {
 			$word = trim($word);
 
-			// Skip empty lines
+			// Skip empty lines.
 			if ( empty($word) )
 				continue;
 
-			// Do some escaping magic so that '#' chars in the
-			// spam words don't break things:
+			/*
+			 * Do some escaping magic so that '#' (number of) characters in the spam
+			 * words don't break things:
+			 */
 			$word = preg_quote($word, '#');
 
+			/*
+			 * Check the comment fields for moderation keywords. If any are found,
+			 * fail the check for the given field by returning false.
+			 */
 			$pattern = "#$word#i";
 			if ( preg_match($pattern, $author) ) return false;
 			if ( preg_match($pattern, $email) ) return false;
@@ -88,7 +101,13 @@ function check_comment($author, $email, $url, $comment, $user_ip, $user_agent, $
 		}
 	}
 
-	// Comment whitelisting:
+	/*
+	 * Check if the option to approve comments by previously-approved authors is enabled.
+	 *
+	 * If it is enabled, check whether the comment author has a previously-approved comment,
+	 * as well as whether there are any moderation keywords (if set) present in the author
+	 * email address. If both checks pass, return true. Otherwise, return false.
+	 */
 	if ( 1 == get_option('comment_whitelist')) {
 		if ( 'trackback' != $comment_type && 'pingback' != $comment_type && $author != '' && $email != '' ) {
 			// expected_slashed ($author, $email)
