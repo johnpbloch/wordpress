@@ -524,6 +524,9 @@ class WP_Http {
 				$cookies[] = new WP_Http_Cookie( $value, $url );
 		}
 
+		// Cast the Response Code to an int
+		$response['code'] = intval( $response['code'] );
+
 		return array('response' => $response, 'headers' => $newheaders, 'cookies' => $cookies);
 	}
 
@@ -1442,10 +1445,6 @@ class WP_Http_Curl {
 			}
 		}
 
-		$response = array();
-		$response['code'] = curl_getinfo( $handle, CURLINFO_HTTP_CODE );
-		$response['message'] = get_status_header_desc($response['code']);
-
 		curl_close( $handle );
 
 		if ( $r['stream'] )
@@ -1454,7 +1453,7 @@ class WP_Http_Curl {
 		$response = array(
 			'headers' => $theHeaders['headers'],
 			'body' => null,
-			'response' => $response,
+			'response' => $theHeaders['response'],
 			'cookies' => $theHeaders['cookies'],
 			'filename' => $r['filename']
 		);
