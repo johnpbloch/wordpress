@@ -72,12 +72,14 @@ class WP_Links_List_Table extends WP_List_Table {
 				'selected' => $cat_id,
 				'name' => 'cat_id',
 				'taxonomy' => 'link_category',
-				'show_option_all' => __( 'View all categories' ),
+				'show_option_all' => __( 'All categories' ),
 				'hide_empty' => true,
 				'hierarchical' => 1,
 				'show_count' => 0,
 				'orderby' => 'name',
 			);
+
+			echo '<label class="screen-reader-text" for="cat_id">' . __( 'Filter by category' ) . '</label>';
 			wp_dropdown_categories( $dropdown_options );
 			submit_button( __( 'Filter' ), 'button', 'filter_action', false, array( 'id' => 'post-query-submit' ) );
 ?>
