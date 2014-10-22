@@ -1,58 +1,80 @@
-<?php 
-$doing_rss = 1;
+<?php
+/**
+ * Outputs the OPML XML format for getting the links defined in the link
+ * administration. This can be used to export links from one blog over to
+ * another. Links aren't exported by the WordPress export, so this file handles
+ * that.
+ *
+ * This file is not added by default to WordPress theme pages when outputting
+ * feed links. It will have to be added manually for browsers and users to pick
+ * up that this file exists.
+ *
+ * @package WordPress
+ */
 
-require('wp-blog-header.php');
-header('Content-type: text/xml; charset=' . get_settings('blog_charset'), true);
-$link_cat = $_GET['link_cat'];
-if ((empty($link_cat)) || ($link_cat == 'all') || ($link_cat == '0')) {
-    $sql_cat = '';
-} else { // be safe
-    $link_cat = ''.urldecode($link_cat).'';
-    $link_cat = addslashes_gpc($link_cat);
-    $link_cat = intval($link_cat);
-    if ($link_cat != 0) {
-        $sql_cat = "AND $wpdb->links.link_category = $link_cat";
-        $cat_name = $wpdb->get_var("SELECT $wpdb->linkcategories.cat_name FROM $wpdb->linkcategories WHERE $wpdb->linkcategories.cat_id = $link_cat");
-        if (!empty($cat_name)) {
-            $cat_name = ": category $cat_name";
-        }
-    }
+require_once( dirname( __FILE__ ) . '/wp-load.php' );
+
+header('Content-Type: text/xml; charset=' . get_option('blog_charset'), true);
+$link_cat = '';
+if ( !empty($_GET['link_cat']) ) {
+	$link_cat = $_GET['link_cat'];
+	if ( !in_array($link_cat, array('all', '0')) )
+		$link_cat = absint( (string)urldecode($link_cat) );
 }
-?><?php echo '<?xml version="1.0"?'.">\n"; ?>
-<!-- generator="wordpress/<?php echo $wp_version ?>" -->
+
+echo '<?xml version="1.0"?'.">\n";
+?>
 <opml version="1.0">
-    <head>
-        <title>Links for <?php echo get_bloginfo('name').$cat_name ?></title>
-        <dateCreated><?php echo gmdate("D, d M Y H:i:s"); ?> GMT</dateCreated>
-    </head>
-    <body>
-<?php $sql = "SELECT $wpdb->links.link_url, link_rss, $wpdb->links.link_name, $wpdb->links.link_category, $wpdb->linkcategories.cat_name, link_updated 
-FROM $wpdb->links 
- JOIN $wpdb->linkcategories on $wpdb->links.link_category = $wpdb->linkcategories.cat_id
- $sql_cat
- ORDER BY $wpdb->linkcategories.cat_name, $wpdb->links.link_name \n";
- //echo("<!-- $sql -->");
- $prev_cat_id = 0;
- $results = $wpdb->get_results($sql);
- if ($results) {
-     foreach ($results as $result) {
-         if ($result->link_category != $prev_cat_id) { // new category
-             if ($prev_cat_id != 0)  { // not first time
-?>
-        </outline>
+	<head>
+		<title><?php printf( __('Links for %s'), esc_attr(get_bloginfo('name', 'display')) ); ?></title>
+		<dateCreated><?php echo gmdate("D, d M Y H:i:s"); ?> GMT</dateCreated>
+		<?php
+		/**
+		 * Fires in the OPML header.
+		 *
+		 * @since 3.0.0
+		 */
+		do_action( 'opml_head' );
+		?>
+	</head>
+	<body>
 <?php
-             } // end if not first time
+if ( empty($link_cat) )
+	$cats = get_categories(array('taxonomy' => 'link_category', 'hierarchical' => 0));
+else
+	$cats = get_categories(array('taxonomy' => 'link_category', 'hierarchical' => 0, 'include' => $link_cat));
+
+foreach ( (array)$cats as $cat ) :
+	/**
+	 * Filter the OPML outline link category name.
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param string $catname The OPML outline category name.
+	 */
+	$catname = apply_filters( 'link_category', $cat->name );
+
 ?>
-        <outline type="category" title="<?php echo wp_specialchars($result->cat_name); ?>">
+<outline type="category" title="<?php echo esc_attr($catname); ?>">
 <?php
-             $prev_cat_id = $result->link_category;
-        } // end if new category
+	$bookmarks = get_bookmarks(array("category" => $cat->term_id));
+	foreach ( (array)$bookmarks as $bookmark ) :
+		/**
+		 * Filter the OPML outline link title text.
+		 *
+		 * @since 2.2.0
+		 *
+		 * @param string $title The OPML outline title text.
+		 */
+		$title = apply_filters( 'link_title', $bookmark->link_name );
 ?>
-            <outline title="<?php echo wp_specialchars($result->link_name); ?>" type="link" xmlUrl="<?php echo wp_specialchars($result->link_rss); ?>" htmlUrl="<?php echo wp_specialchars($result->link_url); ?>" updated="<?php if ('0000-00-00 00:00:00' != $result->link_updated) echo $result->link_updated; ?>" />
+	<outline text="<?php echo esc_attr($title); ?>" type="link" xmlUrl="<?php echo esc_attr($bookmark->link_rss); ?>" htmlUrl="<?php echo esc_attr($bookmark->link_url); ?>" updated="<?php if ('0000-00-00 00:00:00' != $bookmark->link_updated) echo $bookmark->link_updated; ?>" />
 <?php
-        } // end foreach
-    } // end if
+	endforeach; // $bookmarks
 ?>
-        </outline>
-    </body>
+</outline>
+<?php
+endforeach; // $cats
+?>
+</body>
 </opml>
