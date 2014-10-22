@@ -1,18 +1,24 @@
 <?php
-/**
- * WordPress Options Header.
- *
- * Displays updated message, if updated variable is part of the URL query.
- *
- * @package WordPress
- * @subpackage Administration
- */
 
-wp_reset_vars( array( 'action' ) );
-
-if ( isset( $_GET['updated'] ) && isset( $_GET['page'] ) ) {
-	// For backwards compat with plugins that don't use the Settings API and just set updated=1 in the redirect
-	add_settings_error('general', 'settings_updated', __('Settings saved.'), 'updated');
+$wpvarstoreset = array('action','standalone', 'option_group_id');
+for ($i=0; $i<count($wpvarstoreset); $i += 1) {
+	$wpvar = $wpvarstoreset[$i];
+	if (!isset($$wpvar)) {
+		if (empty($_POST["$wpvar"])) {
+			if (empty($_GET["$wpvar"])) {
+				$$wpvar = '';
+			} else {
+				$$wpvar = $_GET["$wpvar"];
+			}
+		} else {
+			$$wpvar = $_POST["$wpvar"];
+		}
+	}
 }
+?>
 
-settings_errors();
+<br clear="all" />
+
+<?php if (isset($_GET['updated'])) : ?>
+<div class="updated"><p><strong><?php _e('Options saved.') ?></strong></p></div>
+<?php endif; ?>

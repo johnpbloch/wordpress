@@ -1,144 +1,113 @@
 <?php
-/**
- * Creates common globals for the rest of WordPress
- *
- * Sets $pagenow global which is the current page. Checks
- * for the browser to set which one is currently being used.
- *
- * Detects which user environment WordPress is being used on.
- * Only attempts to check for Apache, Nginx and IIS -- three web
- * servers with known pretty permalink capability.
- *
- * Note: Though Nginx is detected, WordPress does not currently
- * generate rewrite rules for it. See http://codex.wordpress.org/Nginx
- *
- * @package WordPress
- */
-
-global $pagenow,
-	$is_lynx, $is_gecko, $is_winIE, $is_macIE, $is_opera, $is_NS4, $is_safari, $is_chrome, $is_iphone, $is_IE,
-	$is_apache, $is_IIS, $is_iis7, $is_nginx;
 
 // On which page are we ?
-if ( is_admin() ) {
-	// wp-admin pages are checked more carefully
-	if ( is_network_admin() )
-		preg_match('#/wp-admin/network/?(.*?)$#i', $_SERVER['PHP_SELF'], $self_matches);
-	elseif ( is_user_admin() )
-		preg_match('#/wp-admin/user/?(.*?)$#i', $_SERVER['PHP_SELF'], $self_matches);
-	else
-		preg_match('#/wp-admin/?(.*?)$#i', $_SERVER['PHP_SELF'], $self_matches);
+$PHP_SELF = $_SERVER['PHP_SELF'];
+if (preg_match('#([^/]+.php)#', $PHP_SELF, $self_matches)) {
 	$pagenow = $self_matches[1];
-	$pagenow = trim($pagenow, '/');
-	$pagenow = preg_replace('#\?.*?$#', '', $pagenow);
-	if ( '' === $pagenow || 'index' === $pagenow || 'index.php' === $pagenow ) {
-		$pagenow = 'index.php';
-	} else {
-		preg_match('#(.*?)(/|$)#', $pagenow, $self_matches);
-		$pagenow = strtolower($self_matches[1]);
-		if ( '.php' !== substr($pagenow, -4, 4) )
-			$pagenow .= '.php'; // for Options +Multiviews: /wp-admin/themes/index.php (themes.php is queried)
-	}
+} else if (strstr($PHP_SELF, '?')) {
+	$pagenow = explode('/', $PHP_SELF);
+	$pagenow = trim($pagenow[(sizeof($pagenow)-1)]);
+	$pagenow = explode('?', $pagenow);
+	$pagenow = $pagenow[0];
 } else {
-	if ( preg_match('#([^/]+\.php)([?/].*?)?$#i', $_SERVER['PHP_SELF'], $self_matches) )
-		$pagenow = strtolower($self_matches[1]);
-	else
-		$pagenow = 'index.php';
+	$pagenow = 'index.php';
 }
-unset($self_matches);
 
 // Simple browser detection
-$is_lynx = $is_gecko = $is_winIE = $is_macIE = $is_opera = $is_NS4 = $is_safari = $is_chrome = $is_iphone = false;
-
-if ( isset($_SERVER['HTTP_USER_AGENT']) ) {
-	if ( strpos($_SERVER['HTTP_USER_AGENT'], 'Lynx') !== false ) {
-		$is_lynx = true;
-	} elseif ( stripos($_SERVER['HTTP_USER_AGENT'], 'chrome') !== false ) {
-		if ( stripos( $_SERVER['HTTP_USER_AGENT'], 'chromeframe' ) !== false ) {
-			$is_admin = is_admin();
-			/**
-			 * Filter whether Google Chrome Frame should be used, if available.
-			 *
-			 * @since 3.2.0
-			 *
-			 * @param bool $is_admin Whether to use the Google Chrome Frame. Default is the value of is_admin().
-			 */
-			if ( $is_chrome = apply_filters( 'use_google_chrome_frame', $is_admin ) )
-				header( 'X-UA-Compatible: chrome=1' );
-			$is_winIE = ! $is_chrome;
-		} else {
-			$is_chrome = true;
-		}
-	} elseif ( stripos($_SERVER['HTTP_USER_AGENT'], 'safari') !== false ) {
-		$is_safari = true;
-	} elseif ( ( strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'Trident') !== false ) && strpos($_SERVER['HTTP_USER_AGENT'], 'Win') !== false ) {
-		$is_winIE = true;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false && strpos($_SERVER['HTTP_USER_AGENT'], 'Mac') !== false ) {
-		$is_macIE = true;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Gecko') !== false ) {
-		$is_gecko = true;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Opera') !== false ) {
-		$is_opera = true;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Nav') !== false && strpos($_SERVER['HTTP_USER_AGENT'], 'Mozilla/4.') !== false ) {
-		$is_NS4 = true;
-	}
+$is_lynx = 0; $is_gecko = 0; $is_winIE = 0; $is_macIE = 0; $is_opera = 0; $is_NS4 = 0;
+if (!isset($HTTP_USER_AGENT)) {
+	$HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
 }
-
-if ( $is_safari && stripos($_SERVER['HTTP_USER_AGENT'], 'mobile') !== false )
-	$is_iphone = true;
-
-$is_IE = ( $is_macIE || $is_winIE );
+if (preg_match('/Lynx/', $HTTP_USER_AGENT)) {
+	$is_lynx = 1;
+} elseif (preg_match('/Gecko/', $HTTP_USER_AGENT)) {
+	$is_gecko = 1;
+} elseif ((preg_match('/MSIE/', $HTTP_USER_AGENT)) && (preg_match('/Win/', $HTTP_USER_AGENT))) {
+	$is_winIE = 1;
+} elseif ((preg_match('/MSIE/', $HTTP_USER_AGENT)) && (preg_match('/Mac/', $HTTP_USER_AGENT))) {
+	$is_macIE = 1;
+} elseif (preg_match('/Opera/', $HTTP_USER_AGENT)) {
+	$is_opera = 1;
+} elseif ((preg_match('/Nav/', $HTTP_USER_AGENT) ) || (preg_match('/Mozilla\/4\./', $HTTP_USER_AGENT))) {
+	$is_NS4 = 1;
+}
+$is_IE    = (($is_macIE) || ($is_winIE));
 
 // Server detection
+$is_apache = strstr($_SERVER['SERVER_SOFTWARE'], 'Apache') ? 1 : 0;
+$is_IIS = strstr($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') ? 1 : 0;
 
-/**
- * Whether the server software is Apache or something else
- * @global bool $is_apache
- */
-$is_apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
-
-/**
- * Whether the server software is Nginx or something else
- * @global bool $is_nginx
- */
-$is_nginx = (strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false);
-
-/**
- * Whether the server software is IIS or something else
- * @global bool $is_IIS
- */
-$is_IIS = !$is_apache && (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer') !== false);
-
-/**
- * Whether the server software is IIS 7.X or greater
- * @global bool $is_iis7
- */
-$is_iis7 = $is_IIS && intval( substr( $_SERVER['SERVER_SOFTWARE'], strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/' ) + 14 ) ) >= 7;
-
-/**
- * Test if the current browser runs on a mobile device (smart phone, tablet, etc.)
- *
- * @return bool true|false
- */
-function wp_is_mobile() {
-	static $is_mobile;
-
-	if ( isset($is_mobile) )
-		return $is_mobile;
-
-	if ( empty($_SERVER['HTTP_USER_AGENT']) ) {
-		$is_mobile = false;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Mobile') !== false // many mobile devices (all iPhone, iPad, etc.)
-		|| strpos($_SERVER['HTTP_USER_AGENT'], 'Android') !== false
-		|| strpos($_SERVER['HTTP_USER_AGENT'], 'Silk/') !== false
-		|| strpos($_SERVER['HTTP_USER_AGENT'], 'Kindle') !== false
-		|| strpos($_SERVER['HTTP_USER_AGENT'], 'BlackBerry') !== false
-		|| strpos($_SERVER['HTTP_USER_AGENT'], 'Opera Mini') !== false
-		|| strpos($_SERVER['HTTP_USER_AGENT'], 'Opera Mobi') !== false ) {
-			$is_mobile = true;
-	} else {
-		$is_mobile = false;
-	}
-
-	return $is_mobile;
+// if the config file does not provide the smilies array, let's define it here
+if (!isset($wpsmiliestrans)) {
+	$wpsmiliestrans = array(
+	' :)'        => 'icon_smile.gif',
+	' :D'        => 'icon_biggrin.gif',
+	' :-D'       => 'icon_biggrin.gif',
+	':grin:'    => 'icon_biggrin.gif',
+	' :)'        => 'icon_smile.gif',
+	' :-)'       => 'icon_smile.gif',
+	':smile:'   => 'icon_smile.gif',
+	' :('        => 'icon_sad.gif',
+	' :-('       => 'icon_sad.gif',
+	':sad:'     => 'icon_sad.gif',
+	' :o'        => 'icon_surprised.gif',
+	' :-o'       => 'icon_surprised.gif',
+	':eek:'     => 'icon_surprised.gif',
+	' 8O'        => 'icon_eek.gif',
+	' 8-O'       => 'icon_eek.gif',
+	':shock:'   => 'icon_eek.gif',
+	' :?'        => 'icon_confused.gif',
+	' :-?'       => 'icon_confused.gif',
+	' :???:'     => 'icon_confused.gif',
+	' 8)'        => 'icon_cool.gif',
+	' 8-)'       => 'icon_cool.gif',
+	':cool:'    => 'icon_cool.gif',
+	':lol:'     => 'icon_lol.gif',
+	' :x'        => 'icon_mad.gif',
+	' :-x'       => 'icon_mad.gif',
+	':mad:'     => 'icon_mad.gif',
+	' :P'        => 'icon_razz.gif',
+	' :-P'       => 'icon_razz.gif',
+	':razz:'    => 'icon_razz.gif',
+	':oops:'    => 'icon_redface.gif',
+	':cry:'     => 'icon_cry.gif',
+	':evil:'    => 'icon_evil.gif',
+	':twisted:' => 'icon_twisted.gif',
+	':roll:'    => 'icon_rolleyes.gif',
+	':wink:'    => 'icon_wink.gif',
+	' ;)'        => 'icon_wink.gif',
+	' ;-)'       => 'icon_wink.gif',
+	':!:'       => 'icon_exclaim.gif',
+	':?:'       => 'icon_question.gif',
+	':idea:'    => 'icon_idea.gif',
+	':arrow:'   => 'icon_arrow.gif',
+	' :|'        => 'icon_neutral.gif',
+	' :-|'       => 'icon_neutral.gif',
+	':neutral:' => 'icon_neutral.gif',
+	':mrgreen:' => 'icon_mrgreen.gif',
+	);
 }
+
+// sorts the smilies' array
+if (!function_exists('smiliescmp')) {
+function smiliescmp ($a, $b) {
+	if (strlen($a) == strlen($b)) {
+		return strcmp($a, $b);
+	}
+		return (strlen($a) > strlen($b)) ? -1 : 1;
+	}
+}
+uksort($wpsmiliestrans, 'smiliescmp');
+
+// generates smilies' search & replace arrays
+foreach($wpsmiliestrans as $smiley => $img) {
+	$wp_smiliessearch[] = $smiley;
+	$smiley_masked = htmlspecialchars( trim($smiley) , ENT_QUOTES);
+	$wp_smiliesreplace[] = " <img src='" . get_settings('siteurl') . "/wp-images/smilies/$img' alt='$smiley_masked' class='wp-smiley' /> ";
+}
+
+// Path for cookies
+define('COOKIEPATH', preg_replace('|https?://[^/]+|i', '', get_settings('home') . '/' ) );
+define('SITECOOKIEPATH', preg_replace('|https?://[^/]+|i', '', get_settings('siteurl') . '/' ) );
+
+?>

@@ -1,131 +1,173 @@
 <?php
-/**
- * Dashboard Administration Screen
- *
- * @package WordPress
- * @subpackage Administration
- */
+require_once('admin.php'); 
+$title = __('Dashboard'); 
+require_once('admin-header.php');
+require_once (ABSPATH . WPINC . '/rss-functions.php');
 
-/** Load WordPress Bootstrap */
-require_once( dirname( __FILE__ ) . '/admin.php' );
-
-/** Load WordPress dashboard API */
-require_once(ABSPATH . 'wp-admin/includes/dashboard.php');
-
-wp_dashboard_setup();
-
-wp_enqueue_script( 'dashboard' );
-if ( current_user_can( 'edit_theme_options' ) )
-	wp_enqueue_script( 'customize-loader' );
-if ( current_user_can( 'install_plugins' ) )
-	wp_enqueue_script( 'plugin-install' );
-if ( current_user_can( 'upload_files' ) )
-	wp_enqueue_script( 'media-upload' );
-add_thickbox();
-
-if ( wp_is_mobile() )
-	wp_enqueue_script( 'jquery-touch-punch' );
-
-$title = __('Dashboard');
-$parent_file = 'index.php';
-
-$help = '<p>' . __( 'Welcome to your WordPress Dashboard! This is the screen you will see when you log in to your site, and gives you access to all the site management features of WordPress. You can get help for any screen by clicking the Help tab in the upper corner.' ) . '</p>';
-
-// Not using chaining here, so as to be parseable by PHP4.
-$screen = get_current_screen();
-
-$screen->add_help_tab( array(
-	'id'      => 'overview',
-	'title'   => __( 'Overview' ),
-	'content' => $help,
-) );
-
-// Help tabs
-
-$help  = '<p>' . __( 'The left-hand navigation menu provides links to all of the WordPress administration screens, with submenu items displayed on hover. You can minimize this menu to a narrow icon strip by clicking on the Collapse Menu arrow at the bottom.' ) . '</p>';
-$help .= '<p>' . __( 'Links in the Toolbar at the top of the screen connect your dashboard and the front end of your site, and provide access to your profile and helpful WordPress information.' ) . '</p>';
-
-$screen->add_help_tab( array(
-	'id'      => 'help-navigation',
-	'title'   => __( 'Navigation' ),
-	'content' => $help,
-) );
-
-$help  = '<p>' . __( 'You can use the following controls to arrange your Dashboard screen to suit your workflow. This is true on most other administration screens as well.' ) . '</p>';
-$help .= '<p>' . __( '<strong>Screen Options</strong> - Use the Screen Options tab to choose which Dashboard boxes to show.' ) . '</p>';
-$help .= '<p>' . __( '<strong>Drag and Drop</strong> - To rearrange the boxes, drag and drop by clicking on the title bar of the selected box and releasing when you see a gray dotted-line rectangle appear in the location you want to place the box.' ) . '</p>';
-$help .= '<p>' . __( '<strong>Box Controls</strong> - Click the title bar of the box to expand or collapse it. Some boxes added by plugins may have configurable content, and will show a &#8220;Configure&#8221; link in the title bar if you hover over it.' ) . '</p>';
-
-$screen->add_help_tab( array(
-	'id'      => 'help-layout',
-	'title'   => __( 'Layout' ),
-	'content' => $help,
-) );
-
-$help  = '<p>' . __( 'The boxes on your Dashboard screen are:' ) . '</p>';
-if ( current_user_can( 'edit_posts' ) )
-	$help .= '<p>' . __( '<strong>At A Glance</strong> - Displays a summary of the content on your site and identifies which theme and version of WordPress you are using.' ) . '</p>';
-	$help .= '<p>' . __( '<strong>Activity</strong> - Shows the upcoming scheduled posts, recently published posts, and the most recent comments on your posts and allows you to moderate them.' ) . '</p>';
-if ( is_blog_admin() && current_user_can( 'edit_posts' ) )
-	$help .= '<p>' . __( "<strong>Quick Draft</strong> - Allows you to create a new post and save it as a draft. Also displays links to the 5 most recent draft posts you've started." ) . '</p>';
-if ( ! is_multisite() && current_user_can( 'install_plugins' ) )
-	$help .= '<p>' . __( '<strong>WordPress News</strong> - Latest news from the official WordPress project, the <a href="https://planet.wordpress.org/">WordPress Planet</a>, and popular and recent plugins.' ) . '</p>';
-else
-	$help .= '<p>' . __( '<strong>WordPress News</strong> - Latest news from the official WordPress project, the <a href="https://planet.wordpress.org/">WordPress Planet</a>.' ) . '</p>';
-if ( current_user_can( 'edit_theme_options' ) )
-	$help .= '<p>' . __( '<strong>Welcome</strong> - Shows links for some of the most common tasks when setting up a new site.' ) . '</p>';
-
-$screen->add_help_tab( array(
-	'id'      => 'help-content',
-	'title'   => __( 'Content' ),
-	'content' => $help,
-) );
-
-unset( $help );
-
-$screen->set_help_sidebar(
-	'<p><strong>' . __( 'For more information:' ) . '</strong></p>' .
-	'<p>' . __( '<a href="http://codex.wordpress.org/Dashboard_Screen" target="_blank">Documentation on Dashboard</a>' ) . '</p>' .
-	'<p>' . __( '<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>' ) . '</p>'
-);
-
-include( ABSPATH . 'wp-admin/admin-header.php' );
+$today = current_time('mysql', 1);
 ?>
 
 <div class="wrap">
-	<h2><?php echo esc_html( $title ); ?></h2>
-
-<?php if ( has_action( 'welcome_panel' ) && current_user_can( 'edit_theme_options' ) ) :
-	$classes = 'welcome-panel';
-
-	$option = get_user_meta( get_current_user_id(), 'show_welcome_panel', true );
-	// 0 = hide, 1 = toggled to show or single site creator, 2 = multisite site owner
-	$hide = 0 == $option || ( 2 == $option && wp_get_current_user()->user_email != get_option( 'admin_email' ) );
-	if ( $hide )
-		$classes .= ' hidden'; ?>
-
-	<div id="welcome-panel" class="<?php echo esc_attr( $classes ); ?>">
-		<?php wp_nonce_field( 'welcome-panel-nonce', 'welcomepanelnonce', false ); ?>
-		<a class="welcome-panel-close" href="<?php echo esc_url( admin_url( '?welcome=0' ) ); ?>"><?php _e( 'Dismiss' ); ?></a>
-		<?php
-		/**
-		 * Add content to the welcome panel on the admin dashboard.
-		 *
-		 * To remove the default welcome panel, use remove_action():
-		 * <code>remove_action( 'welcome_panel', 'wp_welcome_panel' );</code>
-		 *
-		 * @since 3.5.0
-		 */
-		do_action( 'welcome_panel' );
-		?>
-	</div>
+<div id="zeitgeist">
+<h2><?php _e('Latest Activity'); ?></h2>
+<?php
+if ( $recentposts = $wpdb->get_results("SELECT ID, post_title FROM $wpdb->posts WHERE post_status = 'publish' AND post_date_gmt < '$today' ORDER BY post_date DESC LIMIT 5") ) :
+?>
+<div>
+<h3><?php _e('Posts'); ?> <a href="edit.php" title="<?php _e('More posts...'); ?>">&raquo;</a></h3>
+<ul>
+<?php
+foreach ($recentposts as $post) {
+	if ($post->post_title == '')
+		$post->post_title = sprintf(__('Post #%s'), $post->ID);
+	echo "<li><a href='post.php?action=edit&amp;post=$post->ID'>";
+	the_title();
+	echo '</a></li>';
+}
+?>
+</ul>
+</div>
 <?php endif; ?>
 
-	<div id="dashboard-widgets-wrap">
-	<?php wp_dashboard(); ?>
-	</div><!-- dashboard-widgets-wrap -->
-
-</div><!-- wrap -->
+<?php
+if ( $scheduled = $wpdb->get_results("SELECT ID, post_title, post_date_gmt FROM $wpdb->posts WHERE post_status = 'publish' AND post_date_gmt > '$today'") ) :
+?> 
+<div>
+<h3><?php _e('Scheduled Entries:') ?></h3>
+<ul>
+<?php
+foreach ($scheduled as $post) {
+	if ($post->post_title == '')
+		$post->post_title = sprintf(__('Post #%s'), $post->ID);
+	echo "<li>" . sprintf(__('%1$s in %2$s'), "<a href='post.php?action=edit&amp;post=$post->ID' title='" . __('Edit this post') . "'>$post->post_title</a>", human_time_diff( current_time('timestamp', 1), strtotime($post->post_date_gmt. ' GMT') ))  . "</li>";
+}
+?> 
+</ul>
+</div>
+<?php endif; ?>
 
 <?php
-require( ABSPATH . 'wp-admin/admin-footer.php' );
+if ( $comments = $wpdb->get_results("SELECT comment_author, comment_author_url, comment_ID, comment_post_ID FROM $wpdb->comments WHERE comment_approved = '1' ORDER BY comment_date_gmt DESC LIMIT 5") ) :
+?>
+<div>
+<h3><?php _e('Comments'); ?> <a href="edit-comments.php" title="<?php _e('More comments...'); ?>">&raquo;</a></h3>
+<ul>
+<?php 
+foreach ($comments as $comment) {
+	echo '<li>' . sprintf(__('%1$s on %2$s'), get_comment_author_link(), '<a href="'. get_permalink($comment->comment_post_ID) . '#comment-' . $comment->comment_ID . '">' . get_the_title($comment->comment_post_ID) . '</a>');
+	edit_comment_link(__("Edit"), ' <small>(', ')</small>'); 
+	echo '</li>';
+}
+?>
+</ul>
+<?php 
+if ( $numcomments = $wpdb->get_var("SELECT COUNT(*) FROM $tablecomments WHERE comment_approved = '0'") ) :
+?>
+<p><strong><a href="moderation.php"><?php echo sprintf(__('There are comments in moderation (%s)'), number_format($numcomments) ); ?> &raquo;</a></strong></p>
+<?php endif; ?>
+</div>
+
+<?php endif; ?>
+
+<div>
+<h3><?php _e('Blog Stats'); ?></h3>
+<?php
+$numposts = $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->posts WHERE post_status = 'publish'");
+if (0 < $numposts) $numposts = number_format($numposts); 
+
+$numcomms = $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->comments WHERE comment_approved = '1'");
+if (0 < $numcomms) $numcomms = number_format($numcomms);
+
+$numcats = $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->categories");
+if (0 < $numcats) $numcats = number_format($numcats);
+?>
+<p><?php printf(__('There are currently %1$s <a href="%2$s" title="Posts">posts</a> and %3$s <a href="%4$s" title="Comments">comments</a>, contained within %5$s <a href="%6$s" title="categories">categories</a>.'), $numposts, 'edit.php',  $numcomms, 'edit-comments.php', $numcats, 'categories.php'); ?></p>
+</div>
+
+<?php
+$rss = @fetch_rss('http://feeds.technorati.com/cosmos/rss/?url='. trailingslashit(get_option('home')) .'&partner=wordpress');
+if ( isset($rss->items) && 0 != count($rss->items) ) {
+?>
+<div id="incominglinks">
+<h3><?php _e('Incoming Links'); ?> <cite><a href="http://www.technorati.com/cosmos/search.html?url=<?php echo trailingslashit(get_option('home')); ?>&amp;partner=wordpress"><?php _e('More'); ?> &raquo;</a></cite></h3>
+<ul>
+<?php
+$rss->items = array_slice($rss->items, 0, 10);
+foreach ($rss->items as $item ) {
+?>
+	<li><a href="<?php echo wp_filter_kses($item['link']); ?>"><?php echo wp_specialchars($item['title']); ?></a></li>
+<?php } ?>
+</ul>
+</div>
+<?php } ?>
+
+</div>
+
+<h2><?php _e('Dashboard'); ?></h2>
+<p><?php _e('Below is the latest news from the official WordPress development blog, click on a title to read the full entry.'); ?></p>
+<?php
+$rss = @fetch_rss('http://wordpress.org/development/feed/');
+if ( isset($rss->items) && 0 != count($rss->items) ) {
+?>
+<h3>WordPress Development Blog</h3>
+<?php
+$rss->items = array_slice($rss->items, 0, 3);
+foreach ($rss->items as $item ) {
+?>
+<h4><a href='<?php echo wp_filter_kses($item['link']); ?>'><?php echo wp_specialchars($item['title']); ?></a> &#8212; <?php echo human_time_diff( strtotime($item['pubdate'], time() ) ); ?> <?php _e('ago'); ?></h4>
+<p><?php echo $item['description']; ?></p>
+<?php
+	}
+}
+?>
+
+
+<?php
+$rss = @fetch_rss('http://planet.wordpress.org/feed/');
+if ( isset($rss->items) && 0 != count($rss->items) ) {
+?>
+<div id="planetnews">
+<h3><?php _e('Other WordPress News'); ?> <a href="http://planet.wordpress.org/"><?php _e('more'); ?> &raquo;</a></h3>
+<ul>
+<?php
+$rss->items = array_slice($rss->items, 0, 20);
+foreach ($rss->items as $item ) {
+?>
+<li><a href='<?php echo wp_filter_kses($item['link']); ?>'><?php echo wp_specialchars($item['title']); ?></a></li>
+<?php
+	}
+?>
+</ul>
+</div>
+<?php
+}
+?>
+<div style="clear: both">&nbsp;
+<br clear="all" />
+</div>
+</div>
+<?php
+$drafts = $wpdb->get_results("SELECT ID, post_title FROM $wpdb->posts WHERE post_status = 'draft' AND post_author = $user_ID");
+if ($drafts) {
+?>
+<div class="wrap">
+
+    <p><strong><?php _e('Your Drafts:') ?></strong> 
+    <?php
+	$i = 0;
+	foreach ($drafts as $draft) {
+		if (0 != $i)
+			echo ', ';
+		$draft->post_title = stripslashes($draft->post_title);
+		if ($draft->post_title == '')
+			$draft->post_title = sprintf(__('Post #%s'), $draft->ID);
+		echo "<a href='post.php?action=edit&amp;post=$draft->ID' title='" . __('Edit this draft') . "'>$draft->post_title</a>";
+		++$i;
+		}
+	?> 
+    .</p> 
+</div>
+<?php } ?>
+<?php
+require('./admin-footer.php');
+?>

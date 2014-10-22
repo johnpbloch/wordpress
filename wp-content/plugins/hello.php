@@ -1,20 +1,15 @@
 <?php
-/**
- * @package Hello_Dolly
- * @version 1.6
- */
 /*
 Plugin Name: Hello Dolly
-Plugin URI: http://wordpress.org/plugins/hello-dolly/
-Description: This is not just a plugin, it symbolizes the hope and enthusiasm of an entire generation summed up in two words sung most famously by Louis Armstrong: Hello, Dolly. When activated you will randomly see a lyric from <cite>Hello, Dolly</cite> in the upper right of your admin screen on every page.
+Plugin URI: http://wordpress.org/#
+Description: This is not just a plugin, it symbolizes the hope and enthusiasm of an entire generation summed up in two words sung most famously by Louis Armstrong. Hello, Dolly. This is, by the way, the world's first official WordPress plugin. When enabled you will randomly see a lyric from <cite>Hello, Dolly</cite> in the upper right of your admin screen on every page.
 Author: Matt Mullenweg
-Version: 1.6
-Author URI: http://ma.tt/
-*/
+Version: 1.0
+Author URI: http://photomatt.net/
+*/ 
 
-function hello_dolly_get_lyric() {
-	/** These are the lyrics to Hello Dolly */
-	$lyrics = "Hello, Dolly
+// These are the lyrics to Hello Dolly
+$lyrics = "Hello, Dolly
 Well, hello, Dolly
 It's so nice to have you back where you belong
 You're lookin' swell, Dolly
@@ -43,40 +38,36 @@ Dolly'll never go away
 Dolly'll never go away
 Dolly'll never go away again";
 
-	// Here we split it into lines
-	$lyrics = explode( "\n", $lyrics );
-
-	// And then randomly choose a line
-	return wptexturize( $lyrics[ mt_rand( 0, count( $lyrics ) - 1 ) ] );
-}
+// Here we split it into lines
+$lyrics = explode("\n", $lyrics);
+// And then randomly choose a line
+$chosen = wptexturize( $lyrics[ mt_rand(0, count($lyrics) ) ] );
 
 // This just echoes the chosen line, we'll position it later
 function hello_dolly() {
-	$chosen = hello_dolly_get_lyric();
+	global $chosen;
 	echo "<p id='dolly'>$chosen</p>";
 }
 
-// Now we set that function up to execute when the admin_notices action is called
-add_action( 'admin_notices', 'hello_dolly' );
+// Now we set that function up to execute when the admin_footer action is called
+add_action('admin_footer', 'hello_dolly');
 
 // We need some CSS to position the paragraph
 function dolly_css() {
-	// This makes sure that the positioning is also good for right-to-left languages
-	$x = is_rtl() ? 'left' : 'right';
-
 	echo "
 	<style type='text/css'>
 	#dolly {
-		float: $x;
-		padding-$x: 15px;
-		padding-top: 5px;		
-		margin: 0;
-		font-size: 11px;
+		position: absolute;
+		top: 5px;
+margin: 0; padding: 0;
+		right: 3em;
+		font-size: 20px;
+		color: #666;
 	}
 	</style>
 	";
 }
 
-add_action( 'admin_head', 'dolly_css' );
+add_action('admin_head', 'dolly_css');
 
 ?>

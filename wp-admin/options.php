@@ -1,265 +1,122 @@
 <?php
-/**
- * Options Management Administration Screen.
- *
- * If accessed directly in a browser this page shows a list of all saved options
- * along with editable fields for their values. Serialized data is not supported
- * and there is no way to remove options via this page. It is not linked to from
- * anywhere else in the admin.
- *
- * This file is also the target of the forms in core and custom options pages
- * that use the Settings API. In this case it saves the new option values
- * and returns the user to their page of origin.
- *
- * @package WordPress
- * @subpackage Administration
- */
+require_once('admin.php');
 
-/** WordPress Administration Bootstrap */
-require_once( dirname( __FILE__ ) . '/admin.php' );
-
-$title = __('Settings');
+$title = __('Options');
 $this_file = 'options.php';
 $parent_file = 'options-general.php';
 
-wp_reset_vars(array('action', 'option_page'));
-
-$capability = 'manage_options';
-
-// This is for back compat and will eventually be removed.
-if ( empty($option_page) ) {
-	$option_page = 'options';
-} else {
-
-	/**
-	 * Filter the capability required when using the Settings API.
-	 *
-	 * By default, the options groups for all registered settings require the manage_options capability.
-	 * This filter is required to change the capability required for a certain options page.
-	 *
-	 * @since 3.2.0
-	 *
-	 * @param string $capability The capability used for the page, which is manage_options by default.
-	 */
-	$capability = apply_filters( "option_page_capability_{$option_page}", $capability );
-}
-
-if ( !current_user_can( $capability ) )
-	wp_die(__('Cheatin&#8217; uh?'));
-
-// Handle admin email change requests
-if ( is_multisite() ) {
-	if ( ! empty($_GET[ 'adminhash' ] ) ) {
-		$new_admin_details = get_option( 'adminhash' );
-		$redirect = 'options-general.php?updated=false';
-		if ( is_array( $new_admin_details ) && $new_admin_details[ 'hash' ] == $_GET[ 'adminhash' ] && !empty($new_admin_details[ 'newemail' ]) ) {
-			update_option( 'admin_email', $new_admin_details[ 'newemail' ] );
-			delete_option( 'adminhash' );
-			delete_option( 'new_admin_email' );
-			$redirect = 'options-general.php?updated=true';
-		}
-		wp_redirect( admin_url( $redirect ) );
-		exit;
-	} elseif ( ! empty( $_GET['dismiss'] ) && 'new_admin_email' == $_GET['dismiss'] ) {
-		delete_option( 'adminhash' );
-		delete_option( 'new_admin_email' );
-		wp_redirect( admin_url( 'options-general.php?updated=true' ) );
-		exit;
-	}
-}
-
-if ( is_multisite() && !is_super_admin() && 'update' != $action )
-	wp_die(__('Cheatin&#8217; uh?'));
-
-$whitelist_options = array(
-	'general' => array( 'blogname', 'blogdescription', 'gmt_offset', 'date_format', 'time_format', 'start_of_week', 'timezone_string', 'WPLANG' ),
-	'discussion' => array( 'default_pingback_flag', 'default_ping_status', 'default_comment_status', 'comments_notify', 'moderation_notify', 'comment_moderation', 'require_name_email', 'comment_whitelist', 'comment_max_links', 'moderation_keys', 'blacklist_keys', 'show_avatars', 'avatar_rating', 'avatar_default', 'close_comments_for_old_posts', 'close_comments_days_old', 'thread_comments', 'thread_comments_depth', 'page_comments', 'comments_per_page', 'default_comments_page', 'comment_order', 'comment_registration' ),
-	'media' => array( 'thumbnail_size_w', 'thumbnail_size_h', 'thumbnail_crop', 'medium_size_w', 'medium_size_h', 'large_size_w', 'large_size_h', 'image_default_size', 'image_default_align', 'image_default_link_type' ),
-	'reading' => array( 'posts_per_page', 'posts_per_rss', 'rss_use_excerpt', 'show_on_front', 'page_on_front', 'page_for_posts', 'blog_public' ),
-	'writing' => array( 'use_smilies', 'default_category', 'default_email_category', 'use_balanceTags', 'default_link_category', 'default_post_format' )
-);
-$whitelist_options['misc'] = $whitelist_options['options'] = $whitelist_options['privacy'] = array();
-
-$mail_options = array('mailserver_url', 'mailserver_port', 'mailserver_login', 'mailserver_pass');
-
-if ( ! in_array( get_option( 'blog_charset' ), array( 'utf8', 'utf-8', 'UTF8', 'UTF-8' ) ) )
-	$whitelist_options['reading'][] = 'blog_charset';
-
-if ( !is_multisite() ) {
-	if ( !defined( 'WP_SITEURL' ) )
-		$whitelist_options['general'][] = 'siteurl';
-	if ( !defined( 'WP_HOME' ) )
-		$whitelist_options['general'][] = 'home';
-
-	$whitelist_options['general'][] = 'admin_email';
-	$whitelist_options['general'][] = 'users_can_register';
-	$whitelist_options['general'][] = 'default_role';
-
-	$whitelist_options['writing'] = array_merge($whitelist_options['writing'], $mail_options);
-	$whitelist_options['writing'][] = 'ping_sites';
-
-	$whitelist_options['media'][] = 'uploads_use_yearmonth_folders';
-
-	// If upload_url_path and upload_path are both default values, they're locked.
-	if ( get_option( 'upload_url_path' ) || ( get_option('upload_path') != 'wp-content/uploads' && get_option('upload_path') ) ) {
-		$whitelist_options['media'][] = 'upload_path';
-		$whitelist_options['media'][] = 'upload_url_path';
-	}
-} else {
-	$whitelist_options['general'][] = 'new_admin_email';
-
-	/**
-	 * Filter whether the post-by-email functionality is enabled.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param bool $enabled Whether post-by-email configuration is enabled. Default true.
-	 */
-	if ( apply_filters( 'enable_post_by_email_configuration', true ) )
-		$whitelist_options['writing'] = array_merge($whitelist_options['writing'], $mail_options);
-}
-
-/**
- * Filter the options white list.
- *
- * @since 2.7.0
- *
- * @param array White list options.
- */
-$whitelist_options = apply_filters( 'whitelist_options', $whitelist_options );
-
-/*
- * If $_GET['action'] == 'update' we are saving settings sent from a settings page
- */
-if ( 'update' == $action ) {
-	if ( 'options' == $option_page && !isset( $_POST['option_page'] ) ) { // This is for back compat and will eventually be removed.
-		$unregistered = true;
-		check_admin_referer( 'update-options' );
-	} else {
-		$unregistered = false;
-		check_admin_referer( $option_page . '-options' );
-	}
-
-	if ( !isset( $whitelist_options[ $option_page ] ) )
-		wp_die( __( '<strong>ERROR</strong>: options page not found.' ) );
-
-	if ( 'options' == $option_page ) {
-		if ( is_multisite() && ! is_super_admin() )
-			wp_die( __( 'You do not have sufficient permissions to modify unregistered settings for this site.' ) );
-		$options = explode( ',', wp_unslash( $_POST[ 'page_options' ] ) );
-	} else {
-		$options = $whitelist_options[ $option_page ];
-	}
-
-	// Handle custom date/time formats.
-	if ( 'general' == $option_page ) {
-		if ( !empty($_POST['date_format']) && isset($_POST['date_format_custom']) && '\c\u\s\t\o\m' == wp_unslash( $_POST['date_format'] ) )
-			$_POST['date_format'] = $_POST['date_format_custom'];
-		if ( !empty($_POST['time_format']) && isset($_POST['time_format_custom']) && '\c\u\s\t\o\m' == wp_unslash( $_POST['time_format'] ) )
-			$_POST['time_format'] = $_POST['time_format_custom'];
-		// Map UTC+- timezones to gmt_offsets and set timezone_string to empty.
-		if ( !empty($_POST['timezone_string']) && preg_match('/^UTC[+-]/', $_POST['timezone_string']) ) {
-			$_POST['gmt_offset'] = $_POST['timezone_string'];
-			$_POST['gmt_offset'] = preg_replace('/UTC\+?/', '', $_POST['gmt_offset']);
-			$_POST['timezone_string'] = '';
-		}
-	}
-
-	if ( $options ) {
-		foreach ( $options as $option ) {
-			if ( $unregistered )
-				_deprecated_argument( 'options.php', '2.7', sprintf( __( 'The <code>%1$s</code> setting is unregistered. Unregistered settings are deprecated. See http://codex.wordpress.org/Settings_API' ), $option, $option_page ) );
-
-			$option = trim( $option );
-			$value = null;
-			if ( isset( $_POST[ $option ] ) ) {
-				$value = $_POST[ $option ];
-				if ( ! is_array( $value ) )
-					$value = trim( $value );
-				$value = wp_unslash( $value );
+$wpvarstoreset = array('action');
+for ($i=0; $i<count($wpvarstoreset); $i += 1) {
+	$wpvar = $wpvarstoreset[$i];
+	if (!isset($$wpvar)) {
+		if (empty($_POST["$wpvar"])) {
+			if (empty($_GET["$wpvar"])) {
+				$$wpvar = '';
+			} else {
+				$$wpvar = $_GET["$wpvar"];
 			}
-			update_option( $option, $value );
-		}
-
-		// Switch translation in case WPLANG was changed.
-		$language = get_option( 'WPLANG' );
-		if ( $language ) {
-			load_default_textdomain( $language );
 		} else {
-			unload_textdomain( 'default' );
+			$$wpvar = $_POST["$wpvar"];
 		}
 	}
-
-	/**
-	 * Handle settings errors and return to options page
-	 */
-	// If no settings errors were registered add a general 'updated' message.
-	if ( !count( get_settings_errors() ) )
-		add_settings_error('general', 'settings_updated', __('Settings saved.'), 'updated');
-	set_transient('settings_errors', get_settings_errors(), 30);
-
-	/**
-	 * Redirect back to the settings page that was submitted
-	 */
-	$goback = add_query_arg( 'settings-updated', 'true',  wp_get_referer() );
-	wp_redirect( $goback );
-	exit;
 }
 
-include( ABSPATH . 'wp-admin/admin-header.php' ); ?>
+if ($user_level < 6)
+	die ( __('Cheatin&#8217; uh?') );
+
+switch($action) {
+
+case 'update':
+	$any_changed = 0;
+    
+	if (!$_POST['page_options']) {
+		foreach ($_POST as $key => $value) {
+			$option_names[] = "'$key'";
+		}
+		$option_names = implode(',', $option_names);
+	} else {
+		$option_names = stripslashes($_POST['page_options']);
+	}
+
+    $options = $wpdb->get_results("SELECT $wpdb->options.option_id, option_name, option_type, option_value, option_admin_level FROM $wpdb->options WHERE option_name IN ($option_names)");
+
+	// Save for later.
+	$old_siteurl = get_settings('siteurl');
+	$old_home = get_settings('home');
+
+// HACK
+// Options that if not there have 0 value but need to be something like "closed"
+    $nonbools = array('default_ping_status', 'default_comment_status');
+    if ($options) {
+        foreach ($options as $option) {
+            // should we even bother checking?
+            if ($user_level >= $option->option_admin_level) {
+                $old_val = $option->option_value;
+                $new_val = trim($_POST[$option->option_name]);
+                if( in_array($option->option_name, $nonbools) && ( $new_val == '0' || $new_val == '') )
+					$new_val = 'closed';
+                if ($new_val !== $old_val) {
+                    $result = $wpdb->query("UPDATE $wpdb->options SET option_value = '$new_val' WHERE option_name = '$option->option_name'");
+					$any_changed++;
+				}
+            }
+        }
+        unset($cache_settings); // so they will be re-read
+        get_settings('siteurl'); // make it happen now
+    } // end if options
+    
+    if ($any_changed) {
+			// If siteurl or home changed, reset cookies.
+			if ( get_settings('siteurl') != $old_siteurl || get_settings('home') != $old_home ) {
+				// If home changed, write rewrite rules to new location.
+				save_mod_rewrite_rules();
+				// Get currently logged in user and password.
+				get_currentuserinfo();
+				// Clear cookies for old paths.
+				wp_clearcookie();
+				// Set cookies for new paths.
+				wp_setcookie($user_login, $user_pass_md5, true, get_settings('home'), get_settings('siteurl'));
+			}
+
+			//$message = sprintf(__('%d setting(s) saved... '), $any_changed);
+    }
+    
+		$referred = remove_query_arg('updated' , $_SERVER['HTTP_REFERER']);
+		$goback = add_query_arg('updated', 'true', $_SERVER['HTTP_REFERER']);
+		$goback = preg_replace('|[^a-z0-9-~+_.?#=&;,/:]|i', '', $goback);
+		wp_redirect($goback);
+    break;
+
+default:
+	include('admin-header.php'); ?>
 
 <div class="wrap">
-  <h2><?php esc_html_e('All Settings'); ?></h2>
-  <form name="form" action="options.php" method="post" id="all-options">
-  <?php wp_nonce_field('options-options') ?>
+  <h2><?php _e('All options'); ?></h2>
+  <form name="form" action="options.php" method="post">
   <input type="hidden" name="action" value="update" />
-  <input type="hidden" name="option_page" value="options" />
-  <table class="form-table">
+  <table width="98%">
 <?php
-$options = $wpdb->get_results( "SELECT * FROM $wpdb->options ORDER BY option_name" );
+$options = $wpdb->get_results("SELECT * FROM $wpdb->options ORDER BY option_name");
 
-foreach ( (array) $options as $option ) :
-	$disabled = false;
-	if ( $option->option_name == '' )
-		continue;
-	if ( is_serialized( $option->option_value ) ) {
-		if ( is_serialized_string( $option->option_value ) ) {
-			// This is a serialized string, so we should display it.
-			$value = maybe_unserialize( $option->option_value );
-			$options_to_update[] = $option->option_name;
-			$class = 'all-options';
-		} else {
-			$value = 'SERIALIZED DATA';
-			$disabled = true;
-			$class = 'all-options disabled';
-		}
-	} else {
-		$value = $option->option_value;
-		$options_to_update[] = $option->option_name;
-		$class = 'all-options';
-	}
-	$name = esc_attr( $option->option_name );
-	?>
+foreach ($options as $option) :
+	$value = wp_specialchars($option->option_value);
+	echo "
 <tr>
-	<th scope="row"><label for="<?php echo $name ?>"><?php echo esc_html( $option->option_name ); ?></label></th>
-<td>
-<?php if ( strpos( $value, "\n" ) !== false ) : ?>
-	<textarea class="<?php echo $class ?>" name="<?php echo $name ?>" id="<?php echo $name ?>" cols="30" rows="5"><?php
-		echo esc_textarea( $value );
-	?></textarea>
-	<?php else: ?>
-		<input class="regular-text <?php echo $class ?>" type="text" name="<?php echo $name ?>" id="<?php echo $name ?>" value="<?php echo esc_attr( $value ) ?>"<?php disabled( $disabled, true ) ?> />
-	<?php endif ?></td>
-</tr>
-<?php endforeach; ?>
+	<th scope='row'><label for='$option->option_name'>$option->option_name</label></th>
+	<td><input type='text' name='$option->option_name' id='$option->option_name' size='30' value='" . $value . "' /></td>
+	<td>$option->option_description</td>
+</tr>";
+endforeach;
+?>
   </table>
-
-<input type="hidden" name="page_options" value="<?php echo esc_attr( implode( ',', $options_to_update ) ); ?>" />
-
-<?php submit_button( __( 'Save Changes' ), 'primary', 'Update' ); ?>
-
+<p class="submit"><input type="submit" name="Update" value="<?php _e('Update Settings &raquo;') ?>" /></p>
   </form>
 </div>
 
+
 <?php
-include( ABSPATH . 'wp-admin/admin-footer.php' );
+break;
+} // end switch
+
+include('admin-footer.php');
+?>

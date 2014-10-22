@@ -1,305 +1,214 @@
 <?php
-/**
- * WordPress Installer
- *
- * @package WordPress
- * @subpackage Administration
- */
+define('WP_INSTALLING', true);
+if (!file_exists('../wp-config.php')) 
+    die("There doesn't seem to be a <code>wp-config.php</code> file. I need this before we can get started. Need more help? <a href='http://wordpress.org/docs/faq/#wp-config'>We got it</a>. You can <a href='setup-config.php'>create a <code>wp-config.php</code> file through a web interface</a>, but this doesn't work for all server setups. The safest way is to manually create the file.");
 
-// Sanity check.
-if ( false ) {
+require_once('../wp-config.php');
+require_once('./upgrade-functions.php');
+
+$guessurl = str_replace('/wp-admin/install.php?step=2', '', 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) );
+
+if (isset($_GET['step']))
+	$step = $_GET['step'];
+else
+	$step = 0;
+header( 'Content-Type: text/html; charset=utf-8' );
 ?>
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+	<title><?php _e('WordPress &rsaquo; Installation'); ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Error: PHP is not running</title>
+	<style media="screen" type="text/css">
+	<!--
+	html {
+		background: #eee;
+	}
+	body {
+		background: #fff;
+		color: #000;
+		font-family: Georgia, "Times New Roman", Times, serif;
+		margin-left: 20%;
+		margin-right: 20%;
+		padding: .2em 2em;
+	}
+	
+	h1 {
+		color: #006;
+		font-size: 18px;
+		font-weight: lighter;
+	}
+	
+	h2 {
+		font-size: 16px;
+	}
+	
+	p, li, dt {
+		line-height: 140%;
+		padding-bottom: 2px;
+	}
+
+	ul, ol {
+		padding: 5px 5px 5px 20px;
+	}
+	#logo {
+		margin-bottom: 2em;
+	}
+	.step a, .step input {
+		font-size: 2em;
+	}
+	td input {
+		font-size: 1.5em;
+	}
+	.step, th {
+		text-align: right;
+	}
+	#footer {
+		text-align: center; 
+		border-top: 1px solid #ccc; 
+		padding-top: 1em; 
+		font-style: italic;
+	}
+	-->
+	</style>
 </head>
-<body class="wp-core-ui">
-	<h1 id="logo"><a href="https://wordpress.org/">WordPress</a></h1>
-	<h2>Error: PHP is not running</h2>
-	<p>WordPress requires that your web server is running PHP. Your server does not have PHP installed, or PHP is turned off.</p>
-</body>
-</html>
+<body>
+<h1 id="logo"><img alt="WordPress" src="http://static.wordpress.org/logo.png" /></h1>
 <?php
-}
-
-/**
- * We are installing WordPress.
- *
- * @since 1.5.1
- * @var bool
- */
-define( 'WP_INSTALLING', true );
-
-/** Load WordPress Bootstrap */
-require_once( dirname( dirname( __FILE__ ) ) . '/wp-load.php' );
-
-/** Load WordPress Administration Upgrade API */
-require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
-/** Load WordPress Translation Install API */
-require_once( ABSPATH . 'wp-admin/includes/translation-install.php' );
-
-/** Load wpdb */
-require_once( ABSPATH . WPINC . '/wp-db.php' );
-
-nocache_headers();
-
-$step = isset( $_GET['step'] ) ? (int) $_GET['step'] : 0;
-
-/**
- * Display install header.
- *
- * @since 2.5.0
- */
-function display_header( $body_classes = '' ) {
-	header( 'Content-Type: text/html; charset=utf-8' );
-	if ( is_rtl() ) {
-		$body_classes .= 'rtl';
-	}
-	if ( $body_classes ) {
-		$body_classes = ' ' . $body_classes;
-	}
-?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" <?php language_attributes(); ?>>
-<head>
-	<meta name="viewport" content="width=device-width" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title><?php _e( 'WordPress &rsaquo; Installation' ); ?></title>
-	<?php
-	wp_admin_css( 'install', true );
-	?>
-</head>
-<body class="wp-core-ui<?php echo $body_classes ?>">
-<h1 id="logo"><a href="<?php echo esc_url( __( 'https://wordpress.org/' ) ); ?>" tabindex="-1"><?php _e( 'WordPress' ); ?></a></h1>
-
-<?php
-} // end display_header()
-
-/**
- * Display installer setup form.
- *
- * @since 2.8.0
- */
-function display_setup_form( $error = null ) {
-	global $wpdb;
-
-	$sql = $wpdb->prepare( "SHOW TABLES LIKE %s", $wpdb->esc_like( $wpdb->users ) );
-	$user_table = ( $wpdb->get_var( $sql ) != null );
-
-	// Ensure that Blogs appear in search engines by default.
-	$blog_public = 1;
-	if ( isset( $_POST['weblog_title'] ) ) {
-		$blog_public = isset( $_POST['blog_public'] );
-	}
-
-	$weblog_title = isset( $_POST['weblog_title'] ) ? trim( wp_unslash( $_POST['weblog_title'] ) ) : '';
-	$user_name = isset($_POST['user_name']) ? trim( wp_unslash( $_POST['user_name'] ) ) : '';
-	$admin_email  = isset( $_POST['admin_email']  ) ? trim( wp_unslash( $_POST['admin_email'] ) ) : '';
-
-	if ( ! is_null( $error ) ) {
-?>
-<p class="message"><?php echo $error; ?></p>
-<?php } ?>
-<form id="setup" method="post" action="install.php?step=2" novalidate="novalidate">
-	<table class="form-table">
-		<tr>
-			<th scope="row"><label for="weblog_title"><?php _e( 'Site Title' ); ?></label></th>
-			<td><input name="weblog_title" type="text" id="weblog_title" size="25" value="<?php echo esc_attr( $weblog_title ); ?>" /></td>
-		</tr>
-		<tr>
-			<th scope="row"><label for="user_login"><?php _e('Username'); ?></label></th>
-			<td>
-			<?php
-			if ( $user_table ) {
-				_e('User(s) already exists.');
-				echo '<input name="user_name" type="hidden" value="admin" />';
-			} else {
-				?><input name="user_name" type="text" id="user_login" size="25" value="<?php echo esc_attr( sanitize_user( $user_name, true ) ); ?>" />
-				<p><?php _e( 'Usernames can have only alphanumeric characters, spaces, underscores, hyphens, periods and the @ symbol.' ); ?></p>
-			<?php
-			} ?>
-			</td>
-		</tr>
-		<?php if ( ! $user_table ) : ?>
-		<tr>
-			<th scope="row">
-				<label for="pass1"><?php _e('Password, twice'); ?></label>
-				<p><?php _e('A password will be automatically generated for you if you leave this blank.'); ?></p>
-			</th>
-			<td>
-				<input name="admin_password" type="password" id="pass1" size="25" value="" />
-				<p><input name="admin_password2" type="password" id="pass2" size="25" value="" /></p>
-				<div id="pass-strength-result"><?php _e('Strength indicator'); ?></div>
-				<p><?php echo _wp_password_hint(); ?></p>
-			</td>
-		</tr>
-		<?php endif; ?>
-		<tr>
-			<th scope="row"><label for="admin_email"><?php _e( 'Your E-mail' ); ?></label></th>
-			<td><input name="admin_email" type="email" id="admin_email" size="25" value="<?php echo esc_attr( $admin_email ); ?>" />
-			<p><?php _e( 'Double-check your email address before continuing.' ); ?></p></td>
-		</tr>
-		<tr>
-			<th scope="row"><label for="blog_public"><?php _e( 'Privacy' ); ?></label></th>
-			<td colspan="2"><label><input type="checkbox" name="blog_public" id="blog_public" value="1" <?php checked( $blog_public ); ?> /> <?php _e( 'Allow search engines to index this site.' ); ?></label></td>
-		</tr>
-	</table>
-	<p class="step"><input type="submit" name="Submit" value="<?php esc_attr_e( 'Install WordPress' ); ?>" class="button button-large" /></p>
-	<input type="hidden" name="language" value="<?php echo isset( $_REQUEST['language'] ) ? esc_attr( $_REQUEST['language'] ) : ''; ?>" />
-</form>
-<?php
-} // end display_setup_form()
-
 // Let's check to make sure WP isn't already installed.
-if ( is_blog_installed() ) {
-	display_header();
-	die( '<h1>' . __( 'Already Installed' ) . '</h1><p>' . __( 'You appear to have already installed WordPress. To reinstall please clear your old database tables first.' ) . '</p><p class="step"><a href="../wp-login.php" class="button button-large">' . __( 'Log In' ) . '</a></p></body></html>' );
-}
-
-$php_version    = phpversion();
-$mysql_version  = $wpdb->db_version();
-$php_compat     = version_compare( $php_version, $required_php_version, '>=' );
-$mysql_compat   = version_compare( $mysql_version, $required_mysql_version, '>=' ) || file_exists( WP_CONTENT_DIR . '/db.php' );
-
-if ( !$mysql_compat && !$php_compat )
-	$compat = sprintf( __( 'You cannot install because <a href="http://codex.wordpress.org/Version_%1$s">WordPress %1$s</a> requires PHP version %2$s or higher and MySQL version %3$s or higher. You are running PHP version %4$s and MySQL version %5$s.' ), $wp_version, $required_php_version, $required_mysql_version, $php_version, $mysql_version );
-elseif ( !$php_compat )
-	$compat = sprintf( __( 'You cannot install because <a href="http://codex.wordpress.org/Version_%1$s">WordPress %1$s</a> requires PHP version %2$s or higher. You are running version %3$s.' ), $wp_version, $required_php_version, $php_version );
-elseif ( !$mysql_compat )
-	$compat = sprintf( __( 'You cannot install because <a href="http://codex.wordpress.org/Version_%1$s">WordPress %1$s</a> requires MySQL version %2$s or higher. You are running version %3$s.' ), $wp_version, $required_mysql_version, $mysql_version );
-
-if ( !$mysql_compat || !$php_compat ) {
-	display_header();
-	die( '<h1>' . __( 'Insufficient Requirements' ) . '</h1><p>' . $compat . '</p></body></html>' );
-}
-
-if ( ! is_string( $wpdb->base_prefix ) || '' === $wpdb->base_prefix ) {
-	display_header();
-	die( '<h1>' . __( 'Configuration Error' ) . '</h1><p>' . __( 'Your <code>wp-config.php</code> file has an empty database table prefix, which is not supported.' ) . '</p></body></html>' );
-}
-
-$language = '';
-if ( ! empty( $_REQUEST['language'] ) ) {
-	$language = preg_replace( '/[^a-zA-Z_]/', '', $_REQUEST['language'] );
-} elseif ( isset( $GLOBALS['wp_local_package'] ) ) {
-	$language = $GLOBALS['wp_local_package'];
-}
+$wpdb->hide_errors();
+$installed = $wpdb->get_results("SELECT * FROM $wpdb->users");
+if ($installed) die(__('<h1>Already Installed</h1><p>You appear to have already installed WordPress. To reinstall please clear your old database tables first.</p>') . '</body></html>');
+$wpdb->show_errors();
 
 switch($step) {
-	case 0: // Step 0
 
-		if ( wp_can_install_language_pack() && empty( $language ) && ( $languages = wp_get_available_translations() ) ) {
-			display_header( 'language-chooser' );
-			echo '<form id="setup" method="post" action="?step=1">';
-			wp_install_language_form( $languages );
-			echo '</form>';
-			break;
-		}
-
-		// Deliberately fall through if we can't reach the translations API.
-
-	case 1: // Step 1, direct link or from language chooser.
-		if ( ! empty( $language ) ) {
-			$loaded_language = wp_download_language_pack( $language );
-			if ( $loaded_language ) {
-				load_default_textdomain( $loaded_language );
-				$GLOBALS['wp_locale'] = new WP_Locale();
-			}
-		}
-
-		display_header();
+	case 0:
 ?>
-<h1><?php _ex( 'Welcome', 'Howdy' ); ?></h1>
-<p><?php _e( 'Welcome to the famous five-minute WordPress installation process! Just fill in the information below and you&#8217;ll be on your way to using the most extendable and powerful personal publishing platform in the world.' ); ?></p>
-
-<h1><?php _e( 'Information needed' ); ?></h1>
-<p><?php _e( 'Please provide the following information. Don&#8217;t worry, you can always change these settings later.' ); ?></p>
-
+<p><?php printf(__('Welcome to WordPress installation. We&#8217;re now going to go through a few steps to get you up and running with the latest in personal publishing platforms. You may want to peruse the <a href="%s">ReadMe documentation</a> at your leisure.'), '../readme.html'); ?></p>
+	<h2 class="step"><a href="install.php?step=1"><?php _e('First Step &raquo;'); ?></a></h2>
 <?php
-		display_setup_form();
-		break;
-	case 2:
-		if ( ! empty( $language ) && load_default_textdomain( $language ) ) {
-			$loaded_language = $language;
-			$GLOBALS['wp_locale'] = new WP_Locale();
-		} else {
-			$loaded_language = 'en_US';
-		}
+	break;
 
-		if ( ! empty( $wpdb->error ) )
-			wp_die( $wpdb->error->get_error_message() );
+	case 1:
 
-		display_header();
-		// Fill in the data we gathered
-		$weblog_title = isset( $_POST['weblog_title'] ) ? trim( wp_unslash( $_POST['weblog_title'] ) ) : '';
-		$user_name = isset($_POST['user_name']) ? trim( wp_unslash( $_POST['user_name'] ) ) : '';
-		$admin_password = isset($_POST['admin_password']) ? wp_unslash( $_POST['admin_password'] ) : '';
-		$admin_password_check = isset($_POST['admin_password2']) ? wp_unslash( $_POST['admin_password2'] ) : '';
-		$admin_email  = isset( $_POST['admin_email'] ) ?trim( wp_unslash( $_POST['admin_email'] ) ) : '';
-		$public       = isset( $_POST['blog_public'] ) ? (int) $_POST['blog_public'] : 0;
-
-		// Check e-mail address.
-		$error = false;
-		if ( empty( $user_name ) ) {
-			// TODO: poka-yoke
-			display_setup_form( __( 'Please provide a valid username.' ) );
-			$error = true;
-		} elseif ( $user_name != sanitize_user( $user_name, true ) ) {
-			display_setup_form( __( 'The username you provided has invalid characters.' ) );
-			$error = true;
-		} elseif ( $admin_password != $admin_password_check ) {
-			// TODO: poka-yoke
-			display_setup_form( __( 'Your passwords do not match. Please try again.' ) );
-			$error = true;
-		} else if ( empty( $admin_email ) ) {
-			// TODO: poka-yoke
-			display_setup_form( __( 'You must provide an email address.' ) );
-			$error = true;
-		} elseif ( ! is_email( $admin_email ) ) {
-			// TODO: poka-yoke
-			display_setup_form( __( 'Sorry, that isn&#8217;t a valid email address. Email addresses look like <code>username@example.com</code>.' ) );
-			$error = true;
-		}
-
-		if ( $error === false ) {
-			$wpdb->show_errors();
-			$result = wp_install( $weblog_title, $user_name, $admin_email, $public, '', wp_slash( $admin_password ), $loaded_language );
 ?>
+<h1><?php _e('First Step'); ?></h1>
+<p><?php _e("Before we begin we need a little bit of information. Don't worry, you can always change these later."); ?></p>
 
-<h1><?php _e( 'Success!' ); ?></h1>
-
-<p><?php _e( 'WordPress has been installed. Were you expecting more steps? Sorry to disappoint.' ); ?></p>
-
-<table class="form-table install-success">
-	<tr>
-		<th><?php _e( 'Username' ); ?></th>
-		<td><?php echo esc_html( sanitize_user( $user_name, true ) ); ?></td>
-	</tr>
-	<tr>
-		<th><?php _e( 'Password' ); ?></th>
-		<td><?php
-		if ( ! empty( $result['password'] ) && empty( $admin_password_check ) ): ?>
-			<code><?php echo esc_html( $result['password'] ) ?></code><br />
-		<?php endif ?>
-			<p><?php echo $result['password_message'] ?></p>
-		</td>
-	</tr>
+<form id="setup" method="post" action="install.php?step=2">
+<table width="100%">
+<tr>
+<th width="33%"><?php _e('Weblog title:'); ?></th>
+<td><input name="weblog_title" type="text" id="weblog_title" size="25" /></td>
+</tr>
+<tr>
+<th><?php _e('Your e-mail:'); ?></th>
+	<td><input name="admin_email" type="text" id="admin_email" size="25" /></td>
+</tr>
 </table>
-
-<p class="step"><a href="../wp-login.php" class="button button-large"><?php _e( 'Log In' ); ?></a></p>
+<p><em><?php _e('Double-check that email address before continuing.'); ?></em></p>
+<h2 class="step">
+<input type="submit" name="Submit" value="<?php _e('Continue to Second Step &raquo;'); ?>" />
+</h2>
+</form>
 
 <?php
-		}
-		break;
+	break;
+	case 2:
+
+// Fill in the data we gathered
+$weblog_title = $_POST['weblog_title'];
+$admin_email = $_POST['admin_email'];
+// check e-mail address
+if (empty($admin_email)) {
+	die (__("<strong>ERROR</strong>: please type your e-mail address"));
+} else if (!is_email($admin_email)) {
+	die (__("<strong>ERROR</strong>: the e-mail address isn't correct"));
 }
-if ( !wp_is_mobile() ) {
+	
 ?>
-<script type="text/javascript">var t = document.getElementById('weblog_title'); if (t){ t.focus(); }</script>
-<?php } ?>
-<?php wp_print_scripts( 'user-profile' ); ?>
-<?php wp_print_scripts( 'language-chooser' ); ?>
+<h1><?php _e('Second Step'); ?></h1>
+<p><?php _e('Now we&#8217;re going to create the database tables and fill them with some default data.'); ?></p>
+
+
+<?php
+flush();
+
+// Set everything up
+make_db_current_silent();
+populate_options();
+
+$wpdb->query("UPDATE $wpdb->options SET option_value = '$weblog_title' WHERE option_name = 'blogname'");
+$wpdb->query("UPDATE $wpdb->options SET option_value = '$admin_email' WHERE option_name = 'admin_email'");
+
+// Now drop in some default links
+$wpdb->query("INSERT INTO $wpdb->linkcategories (cat_id, cat_name) VALUES (1, '".addslashes(__('Blogroll'))."')");
+$wpdb->query("INSERT INTO $wpdb->links (link_url, link_name, link_category, link_rss) VALUES ('http://blog.carthik.net/index.php', 'Carthik', 1, 'http://blog.carthik.net/feed/');");
+$wpdb->query("INSERT INTO $wpdb->links (link_url, link_name, link_category, link_rss) VALUES ('http://blogs.linux.ie/xeer/', 'Donncha', 1, 'http://blogs.linux.ie/xeer/feed/');");
+$wpdb->query("INSERT INTO $wpdb->links (link_url, link_name, link_category, link_rss) VALUES ('http://zengun.org/weblog/', 'Michel', 1, 'http://zengun.org/weblog/feed/');");
+$wpdb->query("INSERT INTO $wpdb->links (link_url, link_name, link_category, link_rss) VALUES ('http://boren.nu/', 'Ryan', 1, 'http://boren.nu/feed/');");
+$wpdb->query("INSERT INTO $wpdb->links (link_url, link_name, link_category, link_rss) VALUES ('http://photomatt.net/', 'Matt', 1, 'http://xml.photomatt.net/feed/');");
+$wpdb->query("INSERT INTO $wpdb->links (link_url, link_name, link_category, link_rss) VALUES ('http://zed1.com/journalized/', 'Mike', 1, 'http://zed1.com/journalized/feed/');");
+$wpdb->query("INSERT INTO $wpdb->links (link_url, link_name, link_category, link_rss) VALUES ('http://www.alexking.org/', 'Alex', 1, 'http://www.alexking.org/blog/wp-rss2.php');");
+$wpdb->query("INSERT INTO $wpdb->links (link_url, link_name, link_category, link_rss) VALUES ('http://dougal.gunters.org/', 'Dougal', 1, 'http://dougal.gunters.org/feed/');");
+
+// Default category
+$wpdb->query("INSERT INTO $wpdb->categories (cat_ID, cat_name, category_nicename) VALUES ('0', '".addslashes(__('Uncategorized'))."', '".sanitize_title(__('Uncategorized'))."')");
+
+// First post
+$now = date('Y-m-d H:i:s');
+$now_gmt = gmdate('Y-m-d H:i:s');
+$wpdb->query("INSERT INTO $wpdb->posts (post_author, post_date, post_date_gmt, post_content, post_title, post_category, post_name, post_modified, post_modified_gmt) VALUES ('1', '$now', '$now_gmt', '".addslashes(__('Welcome to WordPress. This is your first post. Edit or delete it, then start blogging!'))."', '".addslashes(__('Hello world!'))."', '0', '".addslashes(__('hello-world'))."', '$now', '$now_gmt')");
+
+$wpdb->query( "INSERT INTO $wpdb->post2cat (`rel_id`, `post_id`, `category_id`) VALUES (1, 1, 1)" );
+
+// Default comment
+$wpdb->query("INSERT INTO $wpdb->comments (comment_post_ID, comment_author, comment_author_email, comment_author_url, comment_author_IP, comment_date, comment_date_gmt, comment_content) VALUES ('1', '".addslashes(__('Mr WordPress'))."', '', 'http://wordpress.org', '127.0.0.1', '$now', '$now_gmt', '".addslashes(__('Hi, this is a comment.<br />To delete a comment, just log in, and view the posts\' comments, there you will have the option to edit or delete them.'))."')");
+
+// Set up admin user
+$random_password = substr(md5(uniqid(microtime())), 0, 6);
+$wpdb->query("INSERT INTO $wpdb->users (ID, user_login, user_pass, user_nickname, user_email, user_level, user_idmode, user_registered) VALUES ( '1', 'admin', MD5('$random_password'), '".addslashes(__('Administrator'))."', '$admin_email', '10', 'nickname', NOW() )");
+
+$message_headers = 'From: ' . stripslashes($_POST['weblog_title']) . ' <wordpress@' . $_SERVER['SERVER_NAME'] . '>';
+$message = sprintf(__("Your new WordPress blog has been successfully set up at:
+
+%1\$s
+
+You can log in to the administrator account with the following information:
+
+Username: admin
+Password: %2\$s
+
+We hope you enjoy your new weblog. Thanks!
+
+--The WordPress Team
+http://wordpress.org/
+"), $guessurl, $random_password);
+
+@mail($admin_email, __('New WordPress Blog'), $message, $message_headers);
+
+upgrade_all();
+?>
+
+<p><em><?php _e('Finished!'); ?></em></p>
+
+<p><?php printf(__('Now you can <a href="%1$s">log in</a> with the <strong>username</strong> "<code>admin</code>" and <strong>password</strong> "<code>%2$s</code>".'), '../wp-login.php', $random_password); ?></p>
+<p><?php _e('<strong><em>Note that password</em></strong> carefully! It is a <em>random</em> password that was generated just for you. If you lose it, you will have to delete the tables from the database yourself, and re-install WordPress. So to review:'); ?>
+</p>
+<dl>
+<dt><?php _e('Username'); ?></dt>
+<dd><code>admin</code></dd>
+<dt><?php _e('Password'); ?></dt>
+<dd><code><?php echo $random_password; ?></code></dd>
+	<dt><?php _e('Login address'); ?></dt>
+<dd><a href="../wp-login.php">wp-login.php</a></dd>
+</dl>
+<p><?php _e('Were you expecting more steps? Sorry to disappoint. All done! :)'); ?></p>
+<?php
+	break;
+}
+?>
+<p id="footer"><?php _e('<a href="http://wordpress.org/">WordPress</a>, personal publishing platform.'); ?></p>
 </body>
 </html>
