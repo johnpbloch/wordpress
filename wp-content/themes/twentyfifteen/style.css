@@ -818,11 +818,6 @@ a:focus {
 	content: "\f222";
 }
 
-.social-navigation a[href*="skype.com"]:before,
-.social-navigation a[href*="skype:"]:before:before {
-	content: "\f220";
-}
-
 .social-navigation a[href*="stumbleupon.com"]:before {
 	content: "\f223";
 }
@@ -956,7 +951,7 @@ a:focus {
 }
 
 .post-navigation .has-post-thumbnail a:before {
-	background-color: rgba(0, 0, 0, 0.3);
+	background-color: rgba(0, 0, 0, 0.4);
 	content: "";
 	display: block;
 	height: 100%;
@@ -1304,7 +1299,7 @@ img.aligncenter {
 	font-size: 1.2rem;
 	font-weight: 400;
 	line-height: 1.5;
-	margin-top: 0.5em;
+	margin: 0.5em 0 0;
 	opacity: 0.7;
 }
 
