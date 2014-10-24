@@ -34,6 +34,11 @@ ol {
 	margin-left: 0;
 }
 
+li > ul,
+li > ol {
+	margin-left: 1.3333em;
+}
+
 blockquote {
 	border-color: inherit;
 	border-style: solid;
@@ -125,10 +130,6 @@ textarea {
 	font-size: 13px;
 	line-height: 1.8462;
 	margin-top: 0;
-}
-
-.dropdown-toggle {
-	margin-top: -21px;
 }
 
 .social-navigation {
@@ -660,7 +661,12 @@ img.aligncenter {
 
 .comment-content ul,
 .comment-content ol {
-	margin-bottom: 1.6842em;
+	margin: 0 0 1.6842em 0;
+}
+
+.comment-content li > ul,
+.comment-content li > ol {
+	margin-left: 1.3333em;
 }
 
 .comment-list .reply a {
@@ -755,6 +761,12 @@ video {
 .rtl ul,
 .rtl ol {
 	margin-right: 0;
+	margin-left: auto;
+}
+
+.rtl li > ul,
+.rtl li > ol {
+	margin-right: 1.3333em;
 	margin-left: auto;
 }
 
@@ -855,6 +867,18 @@ video {
 .rtl .comment-author .avatar {
 	right: 0;
 	left: auto;
+}
+
+.rtl .comment-content ul,
+.rtl .comment-content ol {
+	margin-right: 0;
+	margin-left: auto;
+}
+
+.rtl .comment-content li > ul,
+.rtl .comment-content li > ol {
+	margin-right: 1.3333em;
+	margin-left: auto;
 }
 
 .rtl .comment-metadata {
