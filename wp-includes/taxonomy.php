@@ -1596,7 +1596,7 @@ function get_term_to_edit( $id, $taxonomy ) {
  *     @type string       $fields            Term fields to query for. Accepts 'all' (returns an array of
  *                                           term objects), 'ids' or 'names' (returns an array of integers
  *                                           or strings, respectively. Default 'all'.
- *     @type string|array $slug              Optional. Slug(s) to return term(s) for. Default empty.
+ *     @type string|array $slug              Optional. Slug or array of slugs to return term(s) for. Default empty.
  *     @type bool         $hierarchical      Whether to include terms that have non-empty descendants (even
  *                                           if $hide_empty is set to true). Default true.
  *     @type string       $search            Search criteria to match terms. Will be SQL-formatted with
@@ -2416,6 +2416,16 @@ function wp_delete_term( $term, $taxonomy, $args = array() ) {
 	if ( isset( $args['force_default'] ) ) {
 		$force_default = $args['force_default'];
 	}
+
+	/**
+	 * Fires when deleting a term, before any modifications are made to posts or terms.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @param int $term Term ID
+	 * @param string $taxonomy Taxonomy Name
+	 */
+	do_action( 'pre_delete_term', $term, $taxonomy );
 
 	// Update children to point to new parent
 	if ( is_taxonomy_hierarchical($taxonomy) ) {
