@@ -3673,7 +3673,6 @@ function wp_unique_post_slug( $slug, $post_ID, $post_status, $post_type, $post_p
 	if ( ! is_array( $feeds ) )
 		$feeds = array();
 
-	$hierarchical_post_types = get_post_types( array('hierarchical' => true) );
 	if ( 'attachment' == $post_type ) {
 		// Attachment slugs must be unique across all types.
 		$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND ID != %d LIMIT 1";
@@ -3696,7 +3695,7 @@ function wp_unique_post_slug( $slug, $post_ID, $post_status, $post_type, $post_p
 			} while ( $post_name_check );
 			$slug = $alt_post_name;
 		}
-	} elseif ( in_array( $post_type, $hierarchical_post_types ) ) {
+	} elseif ( is_post_type_hierarchical( $post_type ) ) {
 		if ( 'nav_menu_item' == $post_type )
 			return $slug;
 
@@ -3704,8 +3703,8 @@ function wp_unique_post_slug( $slug, $post_ID, $post_status, $post_type, $post_p
 		 * Page slugs must be unique within their own trees. Pages are in a separate
 		 * namespace than posts so page slugs are allowed to overlap post slugs.
 		 */
-		$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type IN ( '" . implode( "', '", esc_sql( $hierarchical_post_types ) ) . "' ) AND ID != %d AND post_parent = %d LIMIT 1";
-		$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $slug, $post_ID, $post_parent ) );
+		$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type = %s AND ID != %d AND post_parent = %d LIMIT 1";
+		$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $slug, $post_type, $post_ID, $post_parent ) );
 
 		/**
 		 * Filter whether the post slug would make a bad hierarchical post slug.
@@ -4286,7 +4285,7 @@ function get_page_by_title( $page_title, $output = OBJECT, $post_type = 'page' )
 function get_page_children($page_id, $pages) {
 	$page_list = array();
 	foreach ( (array) $pages as $page ) {
-		if ( $page->post_parent == $page_id ) {
+		if ( $page->post_parent == $page_id || in_array( $page_id, $page->ancestors ) ) {
 			$page_list[] = $page;
 			if ( $children = get_page_children($page->ID, $pages) )
 				$page_list = array_merge($page_list, $children);
@@ -4620,6 +4619,9 @@ function get_pages( $args = array() ) {
 	// Update cache.
 	update_post_cache( $pages );
 
+	// Convert to WP_Post instances
+	$pages = array_map( 'get_post', $pages );
+
 	if ( $child_of || $hierarchical ) {
 		$pages = get_page_children($child_of, $pages);
 	}
@@ -4647,9 +4649,6 @@ function get_pages( $args = array() ) {
 	}
 
 	wp_cache_set( $cache_key, $page_structure, 'posts' );
-
-	// Convert to WP_Post instances.
-	$pages = array_map( 'get_post', $pages );
 
 	/**
 	 * Filter the retrieved list of pages.
