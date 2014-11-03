@@ -1614,9 +1614,9 @@ function deslash($content) {
  *
  * @since 1.5.0
  *
- * @param unknown_type $queries
- * @param unknown_type $execute
- * @return unknown
+ * @param string $queries
+ * @param bool   $execute
+ * @return array
  */
 function dbDelta( $queries = '', $execute = true ) {
 	global $wpdb;
@@ -1890,9 +1890,9 @@ function make_db_current_silent( $tables = 'all' ) {
  *
  * @since 1.5.0
  *
- * @param unknown_type $theme_name
- * @param unknown_type $template
- * @return unknown
+ * @param string $theme_name
+ * @param string $template
+ * @return bool
  */
 function make_site_theme_from_oldschool($theme_name, $template) {
 	$home_path = get_home_path();
@@ -1973,9 +1973,9 @@ function make_site_theme_from_oldschool($theme_name, $template) {
  *
  * @since 1.5.0
  *
- * @param unknown_type $theme_name
- * @param unknown_type $template
- * @return unknown
+ * @param string $theme_name
+ * @param string $template
+ * @return bool|null
  */
 function make_site_theme_from_default($theme_name, $template) {
 	$site_dir = WP_CONTENT_DIR . "/themes/$template";
