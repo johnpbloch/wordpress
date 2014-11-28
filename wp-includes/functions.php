@@ -2641,8 +2641,9 @@ function _scalar_wp_die_handler( $message = '' ) {
  * @since 4.1.0
  *
  * @param mixed $data    Variable (usually an array or object) to encode as JSON.
- * @param int   $options Options to be passed to json_encode(). Default 0.
- * @param int   $depth   Maximum depth to walk through $data. Must be greater than 0, default 512.
+ * @param int   $options Optional. Options to be passed to json_encode(). Default 0.
+ * @param int   $depth   Optional. Maximum depth to walk through $data. Must be
+ *                       greater than 0. Default 512.
  * @return bool|string The JSON encoded string, or false if it cannot be encoded.
  */
 function wp_json_encode( $data, $options = 0, $depth = 512 ) {
@@ -2806,12 +2807,14 @@ function wp_send_json_success( $data = null ) {
 /**
  * Send a JSON response back to an Ajax request, indicating failure.
  *
- * If the `$data` parameter is a `WP_Error` object, the errors within the object are processed
- * and output as an array of error codes and corresponding messages. All other types are
- * output without further processing.
+ * If the `$data` parameter is a {@see WP_Error} object, the errors
+ * within the object are processed and output as an array of error
+ * codes and corresponding messages. All other types are output
+ * without further processing.
  *
  * @since 3.5.0
- * @since 4.1.0 The `$data` parameter is now processed if a `WP_Error` object is passed in.
+ * @since 4.1.0 The `$data` parameter is now processed if a {@see WP_Error}
+ *              object is passed in.
  *
  * @param mixed $data Data to encode as JSON, then print and die.
  */
