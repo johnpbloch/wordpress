@@ -627,22 +627,26 @@ function unregister_widget($widget_class) {
  *
  * If you wanted to quickly create multiple sidebars for a theme or internally.
  * This function will allow you to do so. If you don't pass the 'name' and/or
- * 'id' in $args, then they will be built for you.
- *
- * The default for the name is "Sidebar #", with '#' being replaced with the
- * number the sidebar is currently when greater than one. If first sidebar, the
- * name will be just "Sidebar". The default for id is "sidebar-" followed by the
- * number the sidebar creation is currently at. If the id is provided, and multiple
- * sidebars are being defined, the id will have "-2" appended, and so on.
+ * 'id' in `$args`, then they will be built for you.
  *
  * @since 2.2.0
  *
  * @see register_sidebar() The second parameter is documented by register_sidebar() and is the same here.
  *
- * @param int $number Number of sidebars to create.
- * @param string|array $args Builds Sidebar based off of 'name' and 'id' values.
+ * @param int          $number Optional. Number of sidebars to create. Default 1.
+ * @param array|string $args {
+ *     Optional. Array or string of arguments for building a sidebar.
+ *
+ *     @type string $id   The base string of the unique identifier for each sidebar. If provided, and multiple
+ *                        sidebars are being defined, the id will have "-2" appended, and so on.
+ *                        Default 'sidebar-' followed by the number the sidebar creation is currently at.
+ *     @type string $name The name or title for the sidebars displayed in the admin dashboard. If registering
+ *                        more than one sidebar, include '%d' in the string as a placeholder for the uniquely
+ *                        assigned number for each sidebar.
+ *                        Default 'Sidebar' for the first sidebar, otherwise 'Sidebar %d'.
+ * }
  */
-function register_sidebars($number = 1, $args = array()) {
+function register_sidebars( $number = 1, $args = array() ) {
 	global $wp_registered_sidebars;
 	$number = (int) $number;
 
@@ -1441,12 +1445,22 @@ function wp_convert_widget_settings($base_name, $option_name, $settings) {
  *
  * @since 2.8.0
  *
- * @param string $widget the widget's PHP class name (see default-widgets.php)
- * @param array $instance the widget's instance settings
- * @param array $args the widget's sidebar args
- * @return void
- **/
-function the_widget($widget, $instance = array(), $args = array()) {
+ * @param string $widget   The widget's PHP class name (see default-widgets.php).
+ * @param array  $instance Optional. The widget's instance settings. Default empty array.
+ * @param array  $args {
+ *     Optional. Array of arguments to configure the display of the widget.
+ *
+ *     @type string $before_widget HTML content that will be prepended to the widget's HTML output.
+ *                                 Default `<div class="widget %s">`, where `%s` is the widget's class name.
+ *     @type string $after_widget  HTML content that will be appended to the widget's HTML output.
+ *                                 Default `</div>`.
+ *     @type string $before_title  HTML content that will be prepended to the widget's title when displayed.
+ *                                 Default `<h2 class="widgettitle">`.
+ *     @type string $after_title   HTML content that will be appended to the widget's title when displayed.
+ *                                 Default `</h2>`.
+ * }
+ */
+function the_widget( $widget, $instance = array(), $args = array() ) {
 	global $wp_widget_factory;
 
 	$widget_obj = $wp_widget_factory->widgets[$widget];
