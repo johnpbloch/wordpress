@@ -1600,6 +1600,9 @@ class wpdb {
 		// If we're writing to the database, make sure the query will write safely.
 		if ( $this->check_current_query && ! $this->check_ascii( $query ) ) {
 			$stripped_query = $this->strip_invalid_text_from_query( $query );
+			// strip_invalid_text_from_query() can perform queries, so we need
+			// to flush again, just to make sure everything is clear.
+			$this->flush();
 			if ( $stripped_query !== $query ) {
 				$this->insert_id = 0;
 				return false;
@@ -2510,7 +2513,7 @@ class wpdb {
 	 * @return string|WP_Error The converted string, or a `WP_Error` object if the conversion fails.
 	 */
 	public function strip_invalid_text_for_column( $table, $column, $value ) {
-		if ( $this->check_ascii( $value ) || ! is_string( $value ) ) {
+		if ( ! is_string( $value ) || $this->check_ascii( $value ) ) {
 			return $value;
 		}
 
