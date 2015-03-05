@@ -67,6 +67,7 @@ class WP_oEmbed {
 			'#https?://(www\.)?mixcloud\.com/.*#i'                => array( 'http://www.mixcloud.com/oembed',                     true  ),
 			'#https?://(www\.|embed\.)?ted\.com/talks/.*#i'       => array( 'http://www.ted.com/talks/oembed.{format}',           true  ),
 			'#https?://(www\.)?(animoto|video214)\.com/play/.*#i' => array( 'http://animoto.com/oembeds/create',                  true  ),
+			'#https?://(.+)\.tumblr\.com/post/.*#i'               => array( 'https://www.tumblr.com/oembed/1.0',                  true  ),
 		);
 
 		if ( ! empty( self::$early_providers['add'] ) ) {
@@ -137,6 +138,8 @@ class WP_oEmbed {
 		 * | YouTube      | youtube.com/playlist |  Yes  | 4.0.0     |
 		 * | ------------ | -------------------- | ----- | --------- |
 		 * | Vine         | vine.co              |  Yes  | 4.1.0     |
+		 * | ------------ | -------------------- | ----- | --------- |
+		 * | Tumblr       | tumblr.com           |  Yes  | 4.2.0     |
 		 * | ------------ | -------------------- | ----- | --------- |
 		 *
 		 * No longer supported providers:
