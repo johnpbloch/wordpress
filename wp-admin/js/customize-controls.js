@@ -17,6 +17,7 @@
 
 			this.id = id;
 			this.transport = this.transport || 'refresh';
+			this._dirty = options.dirty || false;
 
 			this.bind( this.preview );
 		},
@@ -2443,10 +2444,7 @@
 			},
 
 			save: function() {
-				var self  = this,
-					query = $.extend( this.query(), {
-						nonce:  this.nonce.save
-					} ),
+				var self = this,
 					processing = api.state( 'processing' ),
 					submitWhenDoneProcessing,
 					submit;
@@ -2454,7 +2452,11 @@
 				body.addClass( 'saving' );
 
 				submit = function () {
-					var request = wp.ajax.post( 'customize_save', query );
+					var request, query;
+					query = $.extend( self.query(), {
+						nonce:  self.nonce.save
+					} );
+					request = wp.ajax.post( 'customize_save', query );
 
 					api.trigger( 'save', request );
 
@@ -2516,7 +2518,8 @@
 		$.each( api.settings.settings, function( id, data ) {
 			api.create( id, id, data.value, {
 				transport: data.transport,
-				previewer: api.previewer
+				previewer: api.previewer,
+				dirty: !! data.dirty
 			} );
 		});
 
