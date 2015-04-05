@@ -118,6 +118,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @since 3.4.0
 	 * @since 4.2.0 Added `$action` param.
+	 * @access public
 	 *
 	 * @param string|null $action Whether the supplied AJAX action is being run.
 	 * @return bool True if it's an AJAX request, false otherwise.
@@ -478,12 +479,13 @@ final class WP_Customize_Manager {
 	}
 
 	/**
-	 * Override a setting's (unsanitized) value as found in any incoming $_POST['customized']
+	 * Override a setting's (unsanitized) value as found in any incoming $_POST['customized'].
 	 *
 	 * @since 4.2.0
+	 * @access public
 	 *
-	 * @param string $setting_id  The ID for the WP_Customize_Setting instance.
-	 * @param mixed $value
+	 * @param string $setting_id ID for the WP_Customize_Setting instance.
+	 * @param mixed  $value      Post value.
 	 */
 	public function set_post_value( $setting_id, $value ) {
 		$this->unsanitized_post_values();
@@ -568,6 +570,7 @@ final class WP_Customize_Manager {
 	 * Print CSS for loading indicators for the Customizer preview.
 	 *
 	 * @since 4.2.0
+	 * @access public
 	 */
 	public function customize_preview_loading_style() {
 		?><style>
@@ -766,7 +769,7 @@ final class WP_Customize_Manager {
 		do_action( 'customize_save_after', $this );
 
 		/**
-		 * Filter response data for a successful customize_save Ajax request.
+		 * Filter response data for a successful customize_save AJAX request.
 		 *
 		 * This filter does not apply if there was a nonce or authentication failure.
 		 *
@@ -799,17 +802,18 @@ final class WP_Customize_Manager {
 	}
 
 	/**
-	 * Register any dynamically-created settings, such as those from $_POST['customized'] that have no corresponding setting created.
+	 * Register any dynamically-created settings, such as those from $_POST['customized']
+	 * that have no corresponding setting created.
 	 *
 	 * This is a mechanism to "wake up" settings that have been dynamically created
-	 * on the frontend and have been sent to WordPress in $_POST['customized']. When WP
+	 * on the frontend and have been sent to WordPress in `$_POST['customized']`. When WP
 	 * loads, the dynamically-created settings then will get created and previewed
 	 * even though they are not directly created statically with code.
 	 *
 	 * @since 4.2.0
 	 *
-	 * @param string[] $setting_ids The setting IDs to add.
-	 * @return WP_Customize_Setting[] The settings added.
+	 * @param string $setting_ids The setting IDs to add.
+	 * @return WP_Customize_Setting The settings added.
 	 */
 	public function add_dynamic_settings( $setting_ids ) {
 		$new_settings = array();
@@ -831,8 +835,8 @@ final class WP_Customize_Manager {
 			 *
 			 * @since 4.2.0
 			 *
-			 * @param false|array $setting_args  The arguments to the WP_Customize_Setting constructor.
-			 * @param string      $setting_id    ID for dynamic setting, usually coming from $_POST['customized'].
+			 * @param false|array $setting_args The arguments to the WP_Customize_Setting constructor.
+			 * @param string      $setting_id   ID for dynamic setting, usually coming from `$_POST['customized']`.
 			 */
 			$setting_args = apply_filters( 'customize_dynamic_setting_args', $setting_args, $setting_id );
 			if ( false === $setting_args ) {
@@ -844,13 +848,14 @@ final class WP_Customize_Manager {
 			 *
 			 * @since 4.2.0
 			 *
-			 * @param string $setting_class  WP_Customize_Setting or a subclass.
-			 * @param string $setting_id     ID for dynamic setting, usually coming from $_POST['customized'].
-			 * @param string $setting_args   WP_Customize_Setting or a subclass.
+			 * @param string $setting_class WP_Customize_Setting or a subclass.
+			 * @param string $setting_id    ID for dynamic setting, usually coming from `$_POST['customized']`.
+			 * @param string $setting_args  WP_Customize_Setting or a subclass.
 			 */
 			$setting_class = apply_filters( 'customize_dynamic_setting_class', $setting_class, $setting_id, $setting_args );
 
 			$setting = new $setting_class( $this, $setting_id, $setting_args );
+
 			$this->add_setting( $setting );
 			$new_settings[] = $setting;
 		}
@@ -1448,6 +1453,9 @@ final class WP_Customize_Manager {
 	 * Add settings from the POST data that were not added with code, e.g. dynamically-created settings for Widgets
 	 *
 	 * @since 4.2.0
+	 * @access public
+	 *
+	 * @see add_dynamic_settings()
 	 */
 	public function register_dynamic_settings() {
 		$this->add_dynamic_settings( array_keys( $this->unsanitized_post_values() ) );
