@@ -1,7 +1,7 @@
 {
 	"name": "johnpbloch/wordpress",
 	"description": "WordPress is web software you can use to create a beautiful website or blog.",
-	"keywords": ["blog", "cms"],
+	"keywords": ["wordpress", "blog", "cms"],
 	"type": "wordpress-core",
 	"homepage": "http://wordpress.org/",
 	"license": "GPL-2.0+",
