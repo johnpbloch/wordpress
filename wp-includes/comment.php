@@ -2082,16 +2082,35 @@ function wp_get_current_commenter() {
 }
 
 /**
- * Inserts a comment to the database.
- *
- * The available comment data key names are 'comment_author_IP', 'comment_date',
- * 'comment_date_gmt', 'comment_parent', 'comment_approved', and 'user_id'.
+ * Inserts a comment into the database.
  *
  * @since 2.0.0
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param array $commentdata Contains information on the comment.
+ * @param array $commentdata {
+ *     Array of arguments for inserting a new comment.
+ *
+ *     @type string     $comment_agent        The HTTP user agent of the `$comment_author` when
+ *                                            the comment was submitted. Default empty.
+ *     @type int|string $comment_approved     Whether the comment has been approved. Default 1.
+ *     @type string     $comment_author       The name of the author of the comment. Default empty.
+ *     @type string     $comment_author_email The email address of the `$comment_author`. Default empty.
+ *     @type string     $comment_author_IP    The IP address of the `$comment_author`. Default empty.
+ *     @type string     $comment_author_url   The URL address of the `$comment_author`. Default empty.
+ *     @type string     $comment_content      The content of the comment. Default empty.
+ *     @type string     $comment_date         The date the comment was submitted. To set the date
+ *                                            manually, `$comment_date_gmt` must also be specified.
+ *                                            Default is the current time.
+ *     @type string     $comment_date_gmt     The date the comment was submitted in the GMT timezone.
+ *                                            Default is `$comment_date` in the site's GMT timezone.
+ *     @type int        $comment_karma        The karma of the comment. Default 0.
+ *     @type int        $comment_parent       ID of this comment's parent, if any. Default 0.
+ *     @type int        $comment_post_ID      ID of the post that relates to the comment, if any.
+ *                                            Default empty.
+ *     @type string     $comment_type         Comment type. Default empty.
+ *     @type int        $user_id              ID of the user who submitted the comment. Default 0.
+ * }
  * @return int|bool The new comment's ID on success, false on failure.
  */
 function wp_insert_comment( $commentdata ) {
@@ -2238,8 +2257,12 @@ function wp_throttle_comment_flood($block, $time_lastcomment, $time_newcomment) 
  * See {@link https://core.trac.wordpress.org/ticket/9235}
  *
  * @since 1.5.0
- * @param array $commentdata Contains information on the comment.
- * @return int|bool The ID of the comment on success, false on failure.
+ *
+ * @see wp_insert_comment()
+ *
+ * @param array $commentdata Contains information on the comment. See wp_insert_comment()
+ *                           for information on accepted arguments.
+ * @return int|false The ID of the comment on success, false on failure.
  */
 function wp_new_comment( $commentdata ) {
 	global $wpdb;
