@@ -22,17 +22,29 @@
  */
 class wp_xmlrpc_server extends IXR_Server {
 	/**
+	 * Methods.
+	 *
+	 * @access public
 	 * @var array
 	 */
 	public $methods;
+
 	/**
+	 * Blog options.
+	 *
+	 * @access public
 	 * @var array
 	 */
 	public $blog_options;
+
 	/**
+	 * IXR_Error instance.
+	 *
+	 * @access public
 	 * @var IXR_Error
 	 */
 	public $error;
+
 	/**
 	 * Register all of the XMLRPC methods that XMLRPC server understands.
 	 *
@@ -176,7 +188,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @since 1.5.0
 	 *
-	 * @return string
+	 * @return string Hello string response.
 	 */
 	public function sayHello() {
 		return 'Hello!';
@@ -190,10 +202,10 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * @param array  $args {
 	 *     Method parameters.
 	 *
-	 *     @type int $number1  A number to add.
-	 *     @type int $number2  A second number to add.
+	 *     @type int $number1 A number to add.
+	 *     @type int $number2 A second number to add.
 	 * }
-	 * @return int
+	 * @return int Sum of the two given numbers.
 	 */
 	public function addTwoNumbers( $args ) {
 		$number1 = $args[0];
@@ -356,7 +368,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	/**
 	 * Set up blog options property.
 	 *
-	 * Passes property through 'xmlrpc_blog_options' filter.
+	 * Passes property through {@see 'xmlrpc_blog_options'} filter.
 	 *
 	 * @since 2.6.0
 	 *
