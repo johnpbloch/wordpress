@@ -533,11 +533,11 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @since 2.6.0
 	 *
-	 * @param array  $args {
+	 * @param array $args {
 	 *     Method parameters, in this order:
 	 *
-	 *     @type string $username
-	 *     @type string $password
+	 *     @type string $username Username.
+	 *     @type string $password Password.
 	 * }
 	 * @return array|IXR_Error Array contains:
 	 *  - 'isAdmin'
@@ -570,7 +570,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		 *
 		 * @since 2.5.0
 		 *
-		 * @param method $name The method name.
+		 * @param string $name The method name.
 		 */
 		do_action( 'xmlrpc_call', 'wp.getUsersBlogs' );
 
@@ -578,7 +578,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		$struct = array();
 
 		foreach ( $blogs as $blog ) {
-			// Don't include blogs that aren't hosted at this site
+			// Don't include blogs that aren't hosted at this site.
 			if ( $blog->site_id != get_current_site()->id )
 				continue;
 
@@ -606,10 +606,11 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * Checks if the method received at least the minimum number of arguments.
 	 *
 	 * @since 3.4.0
+	 * @access protected
 	 *
 	 * @param string|array $args Sanitize single string or array of strings.
-	 * @param int $count Minimum number of arguments.
-	 * @return bool if $args contains at least $count arguments.
+	 * @param int $count         Minimum number of arguments.
+	 * @return bool if `$args` contains at least $count arguments.
 	 */
 	protected function minimum_args( $args, $count ) {
 		if ( count( $args ) < $count ) {
@@ -625,9 +626,9 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @access protected
 	 *
-	 * @param object $taxonomy The unprepared taxonomy data
-	 * @param array $fields The subset of taxonomy fields to return
-	 * @return array The prepared taxonomy data
+	 * @param object $taxonomy The unprepared taxonomy data.
+	 * @param array $fields    The subset of taxonomy fields to return.
+	 * @return array The prepared taxonomy data.
 	 */
 	protected function _prepare_taxonomy( $taxonomy, $fields ) {
 		$_taxonomy = array(
@@ -668,8 +669,8 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @access protected
 	 *
-	 * @param array|object $term The unprepared term data
-	 * @return array The prepared term data
+	 * @param array|object $term The unprepared term data.
+	 * @return array The prepared term data.
 	 */
 	protected function _prepare_term( $term ) {
 		$_term = $term;
@@ -701,8 +702,8 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @access protected
 	 *
-	 * @param string $date
-	 * @return IXR_Date
+	 * @param string $date Date string to convert.
+	 * @return IXR_Date IXR_Date object.
 	 */
 	protected function _convert_date( $date ) {
 		if ( $date === '0000-00-00 00:00:00' ) {
@@ -716,9 +717,9 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @access protected
 	 *
-	 * @param string $date_gmt
-	 * @param string $date
-	 * @return IXR_Date
+	 * @param string $date_gmt WordPress GMT date string.
+	 * @param string $date     Date string.
+	 * @return IXR_Date IXR_Date object.
 	 */
 	protected function _convert_date_gmt( $date_gmt, $date ) {
 		if ( $date !== '0000-00-00 00:00:00' && $date_gmt === '0000-00-00 00:00:00' ) {
