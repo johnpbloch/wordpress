@@ -1611,7 +1611,7 @@ class wp_xmlrpc_server extends IXR_Server {
 			 *
 			 * @since 3.4.0
 			 *
-			 * @param array $fields  Array of post fields.
+			 * @param array  $fields Array of post fields. Default array contains 'post', 'terms', and 'custom_fields'.
 			 * @param string $method Method name.
 			 */
 			$fields = apply_filters( 'xmlrpc_default_post_fields', array( 'post', 'terms', 'custom_fields' ), 'wp.getPost' );
@@ -1639,23 +1639,21 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @since 3.4.0
 	 *
-	 * The optional $filter parameter modifies the query used to retrieve posts.
-	 * Accepted keys are 'post_type', 'post_status', 'number', 'offset',
-	 * 'orderby', and 'order'.
+	 * @see wp_get_recent_posts()
+	 * @see wp_getPost() for more on `$fields`
+	 * @see get_posts() for more on `$filter` values
 	 *
-	 * The optional $fields parameter specifies what fields will be included
-	 * in the response array.
+	 * @param array $args {
+	 *     Method parameters.
 	 *
-	 * @uses wp_get_recent_posts()
-	 * @see wp_getPost() for more on $fields
-	 * @see get_posts() for more on $filter values
-	 *
-	 * @param array $args Method parameters. Contains:
-	 *  - int     $blog_id (unused)
-	 *  - string  $username
-	 *  - string  $password
-	 *  - array   $filter optional
-	 *  - array   $fields optional
+	 *     @type int    $blog_id  Blog ID (unused).
+	 *     @type string $username Username.
+	 *     @type string $password Password.
+	 *     @type array  $filter   Optional. Modifies the query used to retrieve posts. Accepts 'post_type',
+	 *                            'post_status', 'number', 'offset', 'orderby', and 'order'.
+	 *                            Default empty array.
+	 *     @type array  $fields   Optional. The subset of post type fields to return in the response array.
+	 * }
 	 * @return array|IXR_Error Array contains a collection of posts.
 	 */
 	public function wp_getPosts( $args ) {
@@ -1721,7 +1719,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		if ( ! $posts_list )
 			return array();
 
-		// holds all the posts data
+		// Holds all the posts data.
 		$struct = array();
 
 		foreach ( $posts_list as $post ) {
@@ -1739,20 +1737,19 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @since 3.4.0
 	 *
-	 * @uses wp_insert_term()
-	 * @param array $args Method parameters. Contains:
-	 *  - int     $blog_id (unused)
-	 *  - string  $username
-	 *  - string  $password
-	 *  - array   $content_struct
-	 *      The $content_struct must contain:
-	 *      - 'name'
-	 *      - 'taxonomy'
-	 *      Also, it can optionally contain:
-	 *      - 'parent'
-	 *      - 'description'
-	 *      - 'slug'
-	 * @return string|IXR_Error term_id
+	 * @see wp_insert_term()
+	 *
+	 * @param array $args {
+	 *     Method parameters.
+	 *
+	 *     @type int    $blog_id        Blog ID (unused).
+	 *     @type string $username       Username.
+	 *     @type string $password       Password.
+	 *     @type array  $content_struct Content struct for adding a new term. The struct must contain
+	 *                                  the term 'name' and 'taxonomy'. Optional accepted values include
+	 *                                  'parent', 'description', and 'slug'.
+	 * }
+	 * @return int|IXR_Error The term ID on success, or an IXR_Error object on failure.
 	 */
 	public function wp_newTerm( $args ) {
 		if ( ! $this->minimum_args( $args, 4 ) )
@@ -1825,21 +1822,20 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @since 3.4.0
 	 *
-	 * @uses wp_update_term()
-	 * @param array $args Method parameters. Contains:
-	 *  - int     $blog_id (unused)
-	 *  - string  $username
-	 *  - string  $password
-	 *  - string  $term_id
-	 *  - array   $content_struct
-	 *      The $content_struct must contain:
-	 *      - 'taxonomy'
-	 *      Also, it can optionally contain:
-	 *      - 'name'
-	 *      - 'parent'
-	 *      - 'description'
-	 *      - 'slug'
-	 * @return true|IXR_Error True, on success.
+	 * @see wp_update_term()
+	 *
+	 * @param array $args {
+	 *     Method parameters.
+	 *
+	 *     @type int    $blog_id        Blog ID (unused).
+	 *     @type string $username       Username.
+	 *     @type string $password       Password.
+	 *     @type int    $term_id        Term ID.
+	 *     @type array  $content_struct Content struct for editing a term. The struct must contain the
+	 *                                  term ''taxonomy'. Optional accepted values include 'name', 'parent',
+	 *                                  'description', and 'slug'.
+	 * }
+	 * @return true|IXR_Error True on success, IXR_Error instance on failure.
 	 */
 	public function wp_editTerm( $args ) {
 		if ( ! $this->minimum_args( $args, 5 ) )
