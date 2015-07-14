@@ -347,8 +347,10 @@ class WP_Media_List_Table extends WP_List_Table {
 			$link_end = '</a>';
 		}
 
+		$class = $thumb ? ' class="has-media-icon"' : '';
+
 		?>
-		<strong>
+		<strong<?php echo $class; ?>>
 			<?php echo $link_start; ?>
 				<?php if ( $thumb ) : ?>
 				<span class="media-icon <?php echo sanitize_html_class( $mime . '-icon' ); ?>"><?php echo $thumb; ?></span>
@@ -645,9 +647,11 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * @return string Row actions output for media attachments.
 	 */
 	protected function handle_row_actions( $post, $column_name, $primary ) {
-		if ( $primary === $column_name ) {
-			$att_title = _draft_or_post_title();
-			return $this->row_actions( $this->_get_row_actions( $post, $att_title ) );
+		if ( $primary !== $column_name ) {
+			return '';
 		}
+
+		$att_title = _draft_or_post_title();
+		return $this->row_actions( $this->_get_row_actions( $post, $att_title ) );
 	}
 }
