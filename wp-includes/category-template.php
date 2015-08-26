@@ -461,38 +461,42 @@ function wp_dropdown_categories( $args = '' ) {
  * Display or retrieve the HTML list of categories.
  *
  * @since 2.1.0
+ * @since 4.4.0 Introduced the `hide_title_if_no_cats` argument.
  *
  * @param string|array $args {
  *     Array of optional arguments.
  *
- *     @type string       $show_option_all    Text to display for showing all categories. Default empty string.
- *     @type string       $show_option_none   Text to display for the 'no categories' option. Default 'No categories'.
- *     @type string       $orderby            The column to use for ordering categories. Default 'ID'.
- *     @type string       $order              Which direction to order categories. Accepts 'ASC' or 'DESC'.
- *                                            Default 'ASC'.
- *     @type bool|int     $show_count         Whether to show how many posts are in the category. Default 0.
- *     @type bool|int     $hide_empty         Whether to hide categories that don't have any posts attached to them.
- *                                            Default 1.
- *     @type bool|int     $use_desc_for_title Whether to use the category description as the title attribute.
- *                                            Default 1.
- *     @type string       $feed               Text to use for the feed link. Default 'Feed for all posts filed
- *                                            under [cat name]'.
- *     @type string       $feed_type          Feed type. Used to build feed link. See {@link get_term_feed_link()}.
- *                                            Default empty string (default feed).
- *     @type string       $feed_image         URL of an image to use for the feed link. Default empty string.
- *     @type int          $child_of           Term ID to retrieve child terms of. See {@link get_terms()}. Default 0.
- *     @type array|string $exclude            Array or comma/space-separated string of term IDs to exclude.
- *                                            See {@link get_terms()}. Default empty string.
- *     @type array|string $exclude_tree       Array or comma/space-separated string of term IDs to exclude, along with
- *                                            their descendants. See {@link get_terms()}. Default empty string.
- *     @type bool|int     $echo               True to echo markup, false to return it. Default 1.
- *     @type int          $current_category   Category that should get the 'current-cat' class. Default 0.
- *     @type bool         $hierarchical       Whether to include terms that have non-empty descendants.
- *                                            See {@link get_terms()}. Default true.
- *     @type string       $title_li           Text to use for the list title `<li>` element. Pass an empty string
- *                                            to disable. Default 'Categories'.
- *     @type int          $depth              Category depth. Used for tab indentation. Default 0.
- *     @type string       $taxonomy           Taxonomy name. Default 'category'.
+ *     @type string       $show_option_all       Text to display for showing all categories. Default empty string.
+ *     @type string       $show_option_none      Text to display for the 'no categories' option.
+ *                                               Default 'No categories'.
+ *     @type string       $orderby               The column to use for ordering categories. Default 'ID'.
+ *     @type string       $order                 Which direction to order categories. Accepts 'ASC' or 'DESC'.
+ *                                               Default 'ASC'.
+ *     @type bool|int     $show_count            Whether to show how many posts are in the category. Default 0.
+ *     @type bool|int     $hide_empty            Whether to hide categories that don't have any posts attached to them.
+ *                                               Default 1.
+ *     @type bool|int     $use_desc_for_title    Whether to use the category description as the title attribute.
+ *                                               Default 1.
+ *     @type string       $feed                  Text to use for the feed link. Default 'Feed for all posts filed
+ *                                               under [cat name]'.
+ *     @type string       $feed_type             Feed type. Used to build feed link. See {@link get_term_feed_link()}.
+ *                                               Default empty string (default feed).
+ *     @type string       $feed_image            URL of an image to use for the feed link. Default empty string.
+ *     @type int          $child_of              Term ID to retrieve child terms of. See {@link get_terms()}. Default 0.
+ *     @type array|string $exclude               Array or comma/space-separated string of term IDs to exclude.
+ *                                               See {@link get_terms()}. Default empty string.
+ *     @type array|string $exclude_tree          Array or comma/space-separated string of term IDs to exclude, along
+ *                                               with their descendants. See {@link get_terms()}. Default empty string.
+ *     @type bool|int     $echo                  True to echo markup, false to return it. Default 1.
+ *     @type int          $current_category      Category that should get the 'current-cat' class. Default 0.
+ *     @type bool         $hierarchical          Whether to include terms that have non-empty descendants.
+ *                                               See {@link get_terms()}. Default true.
+ *     @type string       $title_li              Text to use for the list title `<li>` element. Pass an empty string
+ *                                               to disable. Default 'Categories'.
+ *     @type bool         $hide_title_if_no_cats Whether to hide the `$title_li` element if there are no terms in
+ *                                               the list. Default false (title will always be shown).
+ *     @type int          $depth                 Category depth. Used for tab indentation. Default 0.
+ *     @type string       $taxonomy              Taxonomy name. Default 'category'.
  * }
  * @return false|string HTML content only if 'echo' argument is 0.
  */
@@ -507,6 +511,7 @@ function wp_list_categories( $args = '' ) {
 		'feed_image' => '', 'exclude' => '',
 		'exclude_tree' => '', 'current_category' => 0,
 		'hierarchical' => true, 'title_li' => __( 'Categories' ),
+		'hide_title_if_no_cats' => false,
 		'echo' => 1, 'depth' => 0,
 		'taxonomy' => 'category'
 	);
@@ -534,7 +539,7 @@ function wp_list_categories( $args = '' ) {
 	$categories = get_categories( $r );
 
 	$output = '';
-	if ( $r['title_li'] && 'list' == $r['style'] ) {
+	if ( $r['title_li'] && 'list' == $r['style'] && ( ! empty( $categories ) || ! $r['hide_title_if_no_cats'] ) ) {
 		$output = '<li class="' . esc_attr( $r['class'] ) . '">' . $r['title_li'] . '<ul>';
 	}
 	if ( empty( $categories ) ) {
