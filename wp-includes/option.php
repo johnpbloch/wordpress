@@ -63,6 +63,7 @@ function get_option( $option, $default = false ) {
 			 * The dynamic portion of the hook name, `$option`, refers to the option name.
 			 *
 			 * @since 3.4.0
+			 * @since 4.4.0 The `$option` parameter was added.
 			 *
 			 * @param mixed  $default The default value to return if the option does not exist
 			 *                        in the database.
@@ -123,6 +124,7 @@ function get_option( $option, $default = false ) {
 	 *
 	 * @since 1.5.0 As 'option_' . $setting
 	 * @since 3.0.0
+	 * @since 4.4.0 The `$option` parameter was added.
 	 *
 	 * @param mixed  $value  Value of the option. If stored serialized, it will be
 	 *                       unserialized prior to being returned.
@@ -266,6 +268,7 @@ function update_option( $option, $value, $autoload = null ) {
 	 * The dynamic portion of the hook name, `$option`, refers to the option name.
 	 *
 	 * @since 2.6.0
+	 * @since 4.4.0 The `$option` parameter was added.
 	 *
 	 * @param mixed  $value     The new, unserialized option value.
 	 * @param mixed  $old_value The old option value.
@@ -345,6 +348,7 @@ function update_option( $option, $value, $autoload = null ) {
 	 * The dynamic portion of the hook name, `$option`, refers to the option name.
 	 *
 	 * @since 2.0.1
+	 * @since 4.4.0 The `$option` parameter was added.
 	 *
 	 * @param mixed  $old_value The old option value.
 	 * @param mixed  $value     The new option value.
@@ -610,6 +614,7 @@ function get_transient( $transient ) {
 	 * of the transient, returning the passed value instead.
 	 *
 	 * @since 2.8.0
+	 * @since 4.4.0 The `$transient` parameter was added
 	 *
 	 * @param mixed  $pre_transient The default value to return if the transient does not exist.
 	 *                              Any value other than false will short-circuit the retrieval
@@ -648,6 +653,7 @@ function get_transient( $transient ) {
 	 * The dynamic portion of the hook name, `$transient`, refers to the transient name.
 	 *
 	 * @since 2.8.0
+	 * @since 4.4.0 The `$transient` parameter was added
 	 *
 	 * @param mixed  $value     Value of transient.
 	 * @param string $transient Transient name.
@@ -680,7 +686,8 @@ function set_transient( $transient, $value, $expiration = 0 ) {
 	 * The dynamic portion of the hook name, `$transient`, refers to the transient name.
 	 *
 	 * @since 3.0.0
-	 * @since 4.2.0 Added `$expiration` parameter.
+	 * @since 4.2.0 The `$expiration` parameter was added.
+	 * @since 4.4.0 The `$transient` parameter was added.
 	 *
 	 * @param mixed  $value      New value of transient.
 	 * @param int    $expiration Time until expiration in seconds.
@@ -991,6 +998,7 @@ function get_site_option( $option, $default = false, $use_cache = true ) {
 	 *
 	 * @since 2.9.0 As 'pre_site_option_' . $key
 	 * @since 3.0.0
+	 * @since 4.4.0 The `$option` parameter was added
 	 *
 	 * @param mixed  $pre_option The default value to return if the option does not exist.
 	 * @param string $option     Option name.
