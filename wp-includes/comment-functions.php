@@ -169,7 +169,7 @@ function get_approved_comments( $post_id, $args = array() ) {
  * @param string $output Optional. OBJECT or ARRAY_A or ARRAY_N constants.
  * @return WP_Comment|array|null Depends on $output value.
  */
-function get_comment(&$comment, $output = OBJECT) {
+function get_comment( &$comment = null, $output = OBJECT ) {
 	if ( empty( $comment ) && isset( $GLOBALS['comment'] ) ) {
 		$comment = $GLOBALS['comment'];
 	}
@@ -1202,7 +1202,7 @@ function wp_unspam_comment($comment_id) {
  *
  * @since 1.0.0
  *
- * @param int $comment_id Comment ID
+ * @param int|WP_Comment $comment_id Comment ID or WP_Comment object
  * @return false|string Status might be 'trash', 'approved', 'unapproved', 'spam'. False on failure.
  */
 function wp_get_comment_status($comment_id) {
