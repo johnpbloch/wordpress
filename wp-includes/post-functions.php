@@ -1835,15 +1835,16 @@ function sanitize_post( $post, $context = 'display' ) {
  * are treated like 'display' when calling filters.
  *
  * @since 2.3.0
+ * @since 4.4.0 Like `sanitize_post()`, `$context` defaults to 'display'.
  *
  * @param string $field   The Post Object field name.
  * @param mixed  $value   The Post Object value.
  * @param int    $post_id Post ID.
- * @param string $context How to sanitize post fields. Looks for 'raw', 'edit',
- *                        'db', 'display', 'attribute' and 'js'.
+ * @param string $context Optional. How to sanitize post fields. Looks for 'raw', 'edit',
+ *                        'db', 'display', 'attribute' and 'js'. Default 'display'.
  * @return mixed Sanitized value.
  */
-function sanitize_post_field($field, $value, $post_id, $context) {
+function sanitize_post_field( $field, $value, $post_id, $context = 'display' ) {
 	$int_fields = array('ID', 'post_parent', 'menu_order');
 	if ( in_array($field, $int_fields) )
 		$value = (int) $value;
@@ -2315,6 +2316,20 @@ function wp_delete_post( $postid = 0, $force_delete = false ) {
 
 	if ( $post->post_type == 'attachment' )
 		return wp_delete_attachment( $postid, $force_delete );
+
+	/**
+	 * Filter whether a post deletion should take place.
+	 *
+	 * @since 4.4.0
+	 *
+	 * @param bool    $delete       Whether to go forward with deletion.
+	 * @param WP_Post $post         Post object.
+	 * @param bool    $force_delete Whether to bypass the trash.
+	 */
+	$check = apply_filters( 'pre_delete_post', null, $post, $force_delete );
+	if ( null !== $check ) {
+		return $check;
+	}
 
 	/**
 	 * Fires before a post is deleted, at the start of wp_delete_post().
