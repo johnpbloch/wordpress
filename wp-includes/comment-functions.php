@@ -1633,8 +1633,8 @@ function wp_new_comment( $commentdata ) {
 	 *
 	 * @since 1.2.0
 	 *
-	 * @param int $comment_ID       The comment ID.
-	 * @param int $comment_approved 1 (true) if the comment is approved, 0 (false) if not.
+	 * @param int        $comment_ID       The comment ID.
+	 * @param int|string $comment_approved 1 if the comment is approved, 0 if not, 'spam' if spam.
 	 */
 	do_action( 'comment_post', $comment_ID, $commentdata['comment_approved'] );
 
@@ -1646,13 +1646,14 @@ function wp_new_comment( $commentdata ) {
  *
  * @since 4.4.0
  *
- * @param int $comment_ID       ID of the comment.
- * @param int $comment_approved Whether the comment is approved.
+ * @param int $comment_ID ID of the comment.
  * @return bool True on success, false on failure.
  */
-function wp_new_comment_notify_moderator( $comment_ID, $comment_approved ) {
+function wp_new_comment_notify_moderator( $comment_ID ) {
+	$comment = get_comment( $comment_ID );
+
 	// Only send notifications for pending comments.
-	if ( '0' != $comment_approved ) {
+	if ( '0' != $comment->comment_approved ) {
 		return false;
 	}
 
