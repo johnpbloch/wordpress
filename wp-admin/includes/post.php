@@ -577,7 +577,8 @@ function bulk_edit_posts( $post_data = null ) {
  *
  * @since 2.0.0
  *
- * @param string $post_type A post type string, defaults to 'post'.
+ * @param string $post_type    Optional. A post type string. Default 'post'.
+ * @param bool   $create_in_db Optional. Whether to insert the post into database. Default false.
  * @return WP_Post Post object containing all the default post data as attributes
  */
 function get_default_post_to_edit( $post_type = 'post', $create_in_db = false ) {
