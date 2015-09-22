@@ -1,9 +1,9 @@
 <?php
 /**
- * Comments API: WP_Comment_Query class
+ * Comment API: WP_Comment_Query class
  *
  * @package WordPress
- * @subpackage Comment
+ * @subpackage Comments
  * @since 4.4.0
  */
 
