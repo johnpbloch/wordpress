@@ -1,10 +1,16 @@
 <?php
 /**
- * WordPress User class.
+ * User API: WP_User class
  *
- * @since 2.0.0
  * @package WordPress
  * @subpackage User
+ * @since 4.4.0
+ */
+
+/**
+ * Core class used to implement the WP_User object.
+ *
+ * @since 2.0.0
  *
  * @property string $nickname
  * @property string $description
@@ -253,11 +259,13 @@ class WP_User {
 	}
 
 	/**
-	 * Magic method for checking the existence of a certain custom field
+	 * Magic method for checking the existence of a certain custom field.
 	 *
 	 * @since 3.3.0
-	 * @param string $key
-	 * @return bool
+	 * @access public
+	 *
+	 * @param string $key User meta key to check if set.
+	 * @return bool Whether the given user meta key is set.
 	 */
 	public function __isset( $key ) {
 		if ( 'id' == $key ) {

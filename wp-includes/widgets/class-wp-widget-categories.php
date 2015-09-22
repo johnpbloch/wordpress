@@ -1,10 +1,19 @@
 <?php
 /**
- * Categories widget class
+ * Widget API: WP_Widget_Categories class
  *
- * @since 2.8.0
  * @package WordPress
  * @subpackage Widgets
+ * @since 4.4.0
+ */
+
+/**
+ * Core class that implements a Categories widget.
+ *
+ * @since 2.8.0
+ * @since 4.4.0 Added support for other taxonomies.
+ *
+ * @see WP_Widget
  */
 class WP_Widget_Categories extends WP_Widget {
 
