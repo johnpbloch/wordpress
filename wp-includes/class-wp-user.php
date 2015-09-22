@@ -305,6 +305,9 @@ class WP_User {
 	/**
 	 * Magic method for setting custom user fields.
 	 *
+	 * This method does not update custom fields in the database. It only stores
+	 * the value on the WP_User instance.
+	 *
 	 * @since 3.3.0
 	 * @access public
 	 *
@@ -319,6 +322,26 @@ class WP_User {
 		}
 
 		$this->data->$key = $value;
+	}
+
+	/**
+	 * Magic method for unsetting a certain custom field
+	 *
+	 * @since 4.4.0
+	 */
+	function __unset( $key ) {
+		if ( 'id' == $key ) {
+			_deprecated_argument( 'WP_User->id', '2.1', __( 'Use <code>WP_User->ID</code> instead.' ) );
+			$key = 'ID';
+		}
+
+		if ( isset( $this->data->$key ) ) {
+			unset( $this->data->$key );
+		}
+
+		if ( isset( self::$back_compat_keys[ $key ] ) ) {
+			unset( self::$back_compat_keys[ $key ] );
+		}
 	}
 
 	/**
