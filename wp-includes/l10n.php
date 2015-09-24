@@ -1,30 +1,31 @@
 <?php
 /**
- * WordPress Translation API
+ * Core Translation API
  *
  * @package WordPress
  * @subpackage i18n
+ * @since 1.2.0
  */
 
 /**
- * Get the current locale.
+ * Retrieves the current locale.
  *
- * If the locale is set, then it will filter the locale in the 'locale' filter
- * hook and return the value.
+ * If the locale is set, then it will filter the locale in the {@see 'locale'}
+ * filter hook and return the value.
  *
  * If the locale is not set already, then the WPLANG constant is used if it is
- * defined. Then it is filtered through the 'locale' filter hook and the value
- * for the locale global set and the locale is returned.
+ * defined. Then it is filtered through the {@see 'locale'} filter hook and
+ * the value for the locale global set and the locale is returned.
  *
  * The process to get the locale should only be done once, but the locale will
- * always be filtered using the 'locale' hook.
+ * always be filtered using the {@see 'locale'} hook.
  *
  * @since 1.5.0
  *
  * @global string $locale
  * @global string $wp_local_package
  *
- * @return string The locale of the blog or from the 'locale' hook.
+ * @return string The locale of the blog or from the {@see 'locale'} hook.
  */
 function get_locale() {
 	global $locale, $wp_local_package;
