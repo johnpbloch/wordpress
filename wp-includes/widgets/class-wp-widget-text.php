@@ -23,22 +23,34 @@ class WP_Widget_Text extends WP_Widget {
 	}
 
 	/**
-	 * @param array $args
-	 * @param array $instance
+	 * Outputs the Text widget content.
+	 *
+	 * @since 2.8.0
+	 * @access public
+	 *
+	 * @param array $args     Display arguments including 'before_title', 'after_title',
+	 *                        'before_widget', and 'after_widget'.
+	 * @param array $instance The settings for the particular instance of the widget.
 	 */
 	public function widget( $args, $instance ) {
+
 		/** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
 		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
+
+		$widget_text = ! empty( $instance['text'] ) ? $instance['text'] : '';
 
 		/**
 		 * Filter the content of the Text widget.
 		 *
 		 * @since 2.3.0
+		 * @since 4.4.0 Added the `$this` parameter.
 		 *
-		 * @param string    $widget_text The widget content.
-		 * @param WP_Widget $instance    WP_Widget instance.
+		 * @param string         $widget_text The widget content.
+		 * @param array          $instance    Array of settings for the current widget.
+		 * @param WP_Widget_Text $this        Current Text widget instance.
 		 */
-		$text = apply_filters( 'widget_text', empty( $instance['text'] ) ? '' : $instance['text'], $instance );
+		$text = apply_filters( 'widget_text', $widget_text, $instance, $this );
+
 		echo $args['before_widget'];
 		if ( ! empty( $title ) ) {
 			echo $args['before_title'] . $title . $args['after_title'];
