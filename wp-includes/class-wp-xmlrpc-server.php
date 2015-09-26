@@ -906,6 +906,7 @@ class wp_xmlrpc_server extends IXR_Server {
 			'caption'          => $media_item->post_excerpt,
 			'description'      => $media_item->post_content,
 			'metadata'         => wp_get_attachment_metadata( $media_item->ID ),
+			'type'             => $media_item->post_mime_type
 		);
 
 		$thumbnail_src = image_downsize( $media_item->ID, $thumbnail_size );
@@ -5734,24 +5735,6 @@ class wp_xmlrpc_server extends IXR_Server {
 			return new IXR_Error( 500, $upload_err );
 		}
 
-		if ( !empty($data['overwrite']) && ($data['overwrite'] == true) ) {
-			// Get postmeta info on the object.
-			$old_file = $wpdb->get_row("
-				SELECT ID
-				FROM {$wpdb->posts}
-				WHERE post_title = '{$name}'
-					AND post_type = 'attachment'
-			");
-
-			// Delete previous file.
-			wp_delete_attachment($old_file->ID);
-
-			// Make sure the new name is different by pre-pending the
-			// previous post id.
-			$filename = preg_replace('/^wpid\d+-/', '', $name);
-			$name = "wpid{$old_file->ID}-{$filename}";
-		}
-
 		$upload = wp_upload_bits($name, null, $bits);
 		if ( ! empty($upload['error']) ) {
 			$errorString = sprintf(__('Could not write file %1$s (%2$s)'), $name, $upload['error']);
@@ -5788,12 +5771,12 @@ class wp_xmlrpc_server extends IXR_Server {
 		 */
 		do_action( 'xmlrpc_call_success_mw_newMediaObject', $id, $args );
 
-		$struct = array(
-			'id'   => strval( $id ),
-			'file' => $name,
-			'url'  => $upload[ 'url' ],
-			'type' => $upload[ 'type' ]
-		);
+		$struct = $this->_prepare_media_item( get_post( $id ) );
+
+		// Deprecated values
+		$struct['id']   = $struct['attachment_id'];
+		$struct['file'] = $struct['title'];
+		$struct['url']  = $struct['link'];
 
 		return $struct;
 	}
