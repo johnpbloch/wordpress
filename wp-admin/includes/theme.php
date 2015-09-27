@@ -308,7 +308,7 @@ function get_theme_feature_list( $api = true ) {
  * an object is returned.
  *
  * The second filter, {@see 'themes_api'}, allows a plugin to override the WordPress.org
- * Theme API entirely. If `$action` is 'query_themes', 'theme_information', or 'hot_categories',
+ * Theme API entirely. If `$action` is 'query_themes', 'theme_information', or 'feature_list',
  * an object MUST be passed. If `$action` is 'hot_tags`, an array should be passed.
  *
  * Finally, the third filter, {@see 'themes_api_result'}, makes it possible to filter the
@@ -316,19 +316,19 @@ function get_theme_feature_list( $api = true ) {
  *
  * Supported arguments per action:
  *
- * | Argument Name      | 'query_plugins' | 'theme_information' | 'hot_tags' | 'feature_list'   |
- * | -------------------| :-------------: | :-----------------: | :--------: | :--------------: |
- * | `$slug`            | No              |  Yes                | No         | No               |
- * | `$per_page`        | Yes             |  No                 | No         | No               |
- * | `$page`            | Yes             |  No                 | No         | No               |
- * | `$number`          | No              |  No                 | Yes        | No               |
- * | `$search`          | Yes             |  No                 | No         | No               |
- * | `$tag`             | Yes             |  No                 | No         | No               |
- * | `$author`          | Yes             |  No                 | No         | No               |
- * | `$user`            | Yes             |  No                 | No         | No               |
- * | `$browse`          | Yes             |  No                 | No         | No               |
- * | `$locale`          | Yes             |  Yes                | No         | No               |
- * | `$fields`          | Yes             |  Yes                | No         | No               |
+ * | Argument Name      | 'query_themes' | 'theme_information' | 'hot_tags' | 'feature_list'   |
+ * | -------------------| :------------: | :-----------------: | :--------: | :--------------: |
+ * | `$slug`            | No             |  Yes                | No         | No               |
+ * | `$per_page`        | Yes            |  No                 | No         | No               |
+ * | `$page`            | Yes            |  No                 | No         | No               |
+ * | `$number`          | No             |  No                 | Yes        | No               |
+ * | `$search`          | Yes            |  No                 | No         | No               |
+ * | `$tag`             | Yes            |  No                 | No         | No               |
+ * | `$author`          | Yes            |  No                 | No         | No               |
+ * | `$user`            | Yes            |  No                 | No         | No               |
+ * | `$browse`          | Yes            |  No                 | No         | No               |
+ * | `$locale`          | Yes            |  Yes                | No         | No               |
+ * | `$fields`          | Yes            |  Yes                | No         | No               |
  *
  * @since 2.8.0
  *
