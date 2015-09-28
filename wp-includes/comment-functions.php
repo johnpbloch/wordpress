@@ -877,8 +877,9 @@ function get_page_of_comment( $comment_ID, $args = array() ) {
 
 	$comment_args = array(
 		'type'       => $args['type'],
-		'post_ID'    => $comment->comment_post_ID,
+		'post_id'    => $comment->comment_post_ID,
 		'fields'     => 'ids',
+		'count'      => true,
 		'status'     => 'approve',
 		'date_query' => array(
 			array(
@@ -888,8 +889,8 @@ function get_page_of_comment( $comment_ID, $args = array() ) {
 		),
 	);
 
-	$older_comment_ids = get_comments( $comment_args );
-	$older_comment_count = count( $older_comment_ids );
+	$comment_query = new WP_Comment_Query();
+	$older_comment_count = $comment_query->query( $comment_args );
 
 	// No older comments? Then it's page #1.
 	if ( 0 == $older_comment_count )
