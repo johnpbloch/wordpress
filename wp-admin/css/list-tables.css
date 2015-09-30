@@ -285,7 +285,7 @@ th .comment-grey-bubble:before {
 ------------------------------------------------------------------------------*/
 
 table.fixed {
-	table-layout: auto;
+	table-layout: fixed;
 }
 
 .fixed .column-rating,
@@ -1676,6 +1676,10 @@ div.action-links,
 
 	.plugin-card .desc p:first-of-type {
 		margin-top: 0;
+	}
+
+	.fixed .column-date {
+		width: 14%;
 	}
 }
 
