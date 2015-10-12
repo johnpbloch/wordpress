@@ -65,6 +65,8 @@ if ( have_posts() ) :
 			/**
 			 * Filter the thumbnail image size for use in the embed template.
 			 *
+			 * @since 4.4.0
+			 * 
 			 * @param string $image_size Thumbnail image size.
 			 */
 			$image_size = apply_filters( 'oembed_thumbnail_image_size', $image_size );
@@ -121,14 +123,12 @@ if ( have_posts() ) :
 			<div class="wp-embed-footer">
 				<div class="wp-embed-site-title">
 					<?php
-					$site_icon_url = admin_url( 'images/w-logo-blue.png' );
-
-					if ( function_exists( 'get_site_icon_url' ) ) {
-						$site_icon_url = get_site_icon_url( 32, $site_icon_url );
-					}
+					$site_icon_url = get_site_icon_url( 32, admin_url( 'images/w-logo-blue.png' ) );
 
 					/**
 					 * Filters the site icon URL for use in the embed template.
+					 *
+					 * @since 4.4.0
 					 *
 					 * @param string $site_icon_url The site icon URL.
 					 */
@@ -196,7 +196,7 @@ if ( have_posts() ) :
 							</p>
 						</div>
 						<div id="wp-embed-share-tab-html" class="wp-embed-share-tab" role="tabpanel" aria-labelledby="wp-embed-share-tab-button-html" aria-hidden="true">
-							<textarea class="wp-embed-share-input" tabindex="0" readonly><?php echo esc_attr( get_post_embed_html( null, 600, 400 ) ); ?></textarea>
+							<textarea class="wp-embed-share-input" tabindex="0" readonly><?php echo esc_textarea( get_post_embed_html( null, 600, 400 ) ); ?></textarea>
 
 							<p class="wp-embed-share-description">
 								<?php _e( 'Copy and paste this code into your site to embed' ); ?>
@@ -233,6 +233,8 @@ else :
 				/**
 				 * Filters the site icon URL for use in the embed template.
 				 *
+				 * @since 4.4.0
+				 *
 				 * @param string $site_icon_url The site icon URL.
 				 */
 				$site_icon_url = apply_filters( 'oembed_site_icon_url', $site_icon_url );
@@ -241,7 +243,7 @@ else :
 					'<a href="%s" target="_top"><img src="%s" width="32" height="32" alt="" class="wp-embed-site-icon"/><span>%s</span></a>',
 					esc_url( home_url() ),
 					esc_url( $site_icon_url ),
-					esc_attr( get_bloginfo( 'name' ) )
+					esc_html( get_bloginfo( 'name' ) )
 				);
 				?>
 			</div>
