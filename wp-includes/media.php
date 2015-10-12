@@ -707,8 +707,8 @@ function get_intermediate_image_sizes() {
  * @since 2.5.0
  *
  * @param int          $attachment_id Image attachment ID.
- * @param string|array $size          Optional. Registered image size to retrieve the source for or a flat
- *                                    array of height and width dimensions. Default 'thumbnail'.
+ * @param string|array $size          Optional. Image size. Accepts any valid image size, or an array of width
+ *                                    and height values in pixels (in that order). Default 'thumbnail'.
  * @param bool         $icon          Optional. Whether the image should be treated as an icon. Default false.
  * @return false|array Returns an array (url, width, height, is_intermediate), or false, if no image is available.
  */
@@ -737,8 +737,8 @@ function wp_get_attachment_image_src( $attachment_id, $size = 'thumbnail', $icon
 	 *
 	 * @param array|false  $image         Either array with src, width & height, icon src, or false.
 	 * @param int          $attachment_id Image attachment ID.
-	 * @param string|array $size          Registered image size to retrieve the source for or a flat
-	 *                                    array of height and width dimensions. Default 'thumbnail'.
+	 * @param string|array $size          Size of image. Image size or array of width and height values
+	 *                                    (in that order). Default 'thumbnail'.
 	 * @param bool         $icon          Whether the image should be treated as an icon. Default false.
 	 */
 	return apply_filters( 'wp_get_attachment_image_src', $image, $attachment_id, $size, $icon );
@@ -755,8 +755,8 @@ function wp_get_attachment_image_src( $attachment_id, $size = 'thumbnail', $icon
  * @since 2.5.0
  *
  * @param int          $attachment_id Image attachment ID.
- * @param string|array $size          Optional. Registered image size or flat array of height and width
- *                                    dimensions. Default 'thumbnail'.
+ * @param string|array $size          Optional. Image size. Accepts any valid image size, or an array of width
+ *                                    and height values in pixels (in that order). Default 'thumbnail'.
  * @param bool         $icon          Optional. Whether the image should be treated as an icon. Default false.
  * @param string|array $attr          Optional. Attributes for the image markup. Default empty.
  * @return string HTML img element or empty string on failure.
@@ -801,7 +801,8 @@ function wp_get_attachment_image($attachment_id, $size = 'thumbnail', $icon = fa
 		 *
 		 * @param array        $attr       Attributes for the image markup.
 		 * @param WP_Post      $attachment Image attachment post.
-		 * @param string|array $size       Requested size.
+		 * @param string|array $size       Requested size. Image size or array of width and height values
+		 *                                 (in that order). Default 'thumbnail'.
 		 */
 		$attr = apply_filters( 'wp_get_attachment_image_attributes', $attr, $attachment, $size );
 		$attr = array_map( 'esc_attr', $attr );
@@ -821,8 +822,8 @@ function wp_get_attachment_image($attachment_id, $size = 'thumbnail', $icon = fa
  * @since 4.4.0
  *
  * @param int          $attachment_id Image attachment ID.
- * @param string|array $size          Optional. Registered image size to retrieve the source for or a flat
- *                                    array of height and width dimensions. Default 'thumbnail'.
+ * @param string|array $size          Optional. Image size to retrieve. Accepts any valid image size, or an array
+ *                                    of width and height values in pixels (in that order). Default 'thumbnail'.
  * @param bool         $icon          Optional. Whether the image should be treated as an icon. Default false.
  * @return string|false Attachment URL or false if no image is available.
  */
@@ -1387,7 +1388,8 @@ add_shortcode('gallery', 'gallery_shortcode');
  *     @type string $captiontag HTML tag to use for each image's caption.
  *                              Default 'dd', or 'figcaption' when the theme registers HTML5 gallery support.
  *     @type int    $columns    Number of columns of images to display. Default 3.
- *     @type string $size       Size of the images to display. Default 'thumbnail'.
+ *     @type string|array $size Size of the images to display. Accepts any valid image size, or an array of width
+ *                              and height values in pixels (in that order). Default 'thumbnail'.
  *     @type string $ids        A comma-separated list of IDs of attachments to display. Default empty.
  *     @type string $include    A comma-separated list of IDs of attachments to include. Default empty.
  *     @type string $exclude    A comma-separated list of IDs of attachments to exclude. Default empty.
