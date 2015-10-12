@@ -231,7 +231,7 @@ function image_downsize( $id, $size = 'medium' ) {
  * @param string     $name   Image size identifier.
  * @param int        $width  Image width in pixels.
  * @param int        $height Image height in pixels.
- * @param bool|array $crop   Optional. Whether to crop images to specified height and width or resize.
+ * @param bool|array $crop   Optional. Whether to crop images to specified width and height or resize.
  *                           An array can specify positioning of the crop area. Default false.
  */
 function add_image_size( $name, $width = 0, $height = 0, $crop = false ) {
@@ -290,7 +290,7 @@ function remove_image_size( $name ) {
  *
  * @param int        $width  Image width in pixels.
  * @param int        $height Image height in pixels.
- * @param bool|array $crop   Optional. Whether to crop images to specified height and width or resize.
+ * @param bool|array $crop   Optional. Whether to crop images to specified width and height or resize.
  *                           An array can specify positioning of the crop area. Default false.
  */
 function set_post_thumbnail_size( $width = 0, $height = 0, $crop = false ) {
@@ -1377,24 +1377,24 @@ add_shortcode('gallery', 'gallery_shortcode');
  * @param array $attr {
  *     Attributes of the gallery shortcode.
  *
- *     @type string $order      Order of the images in the gallery. Default 'ASC'. Accepts 'ASC', 'DESC'.
- *     @type string $orderby    The field to use when ordering the images. Default 'menu_order ID'.
- *                              Accepts any valid SQL ORDERBY statement.
- *     @type int    $id         Post ID.
- *     @type string $itemtag    HTML tag to use for each image in the gallery.
- *                              Default 'dl', or 'figure' when the theme registers HTML5 gallery support.
- *     @type string $icontag    HTML tag to use for each image's icon.
- *                              Default 'dt', or 'div' when the theme registers HTML5 gallery support.
- *     @type string $captiontag HTML tag to use for each image's caption.
- *                              Default 'dd', or 'figcaption' when the theme registers HTML5 gallery support.
- *     @type int    $columns    Number of columns of images to display. Default 3.
- *     @type string|array $size Size of the images to display. Accepts any valid image size, or an array of width
- *                              and height values in pixels (in that order). Default 'thumbnail'.
- *     @type string $ids        A comma-separated list of IDs of attachments to display. Default empty.
- *     @type string $include    A comma-separated list of IDs of attachments to include. Default empty.
- *     @type string $exclude    A comma-separated list of IDs of attachments to exclude. Default empty.
- *     @type string $link       What to link each image to. Default empty (links to the attachment page).
- *                              Accepts 'file', 'none'.
+ *     @type string       $order      Order of the images in the gallery. Default 'ASC'. Accepts 'ASC', 'DESC'.
+ *     @type string       $orderby    The field to use when ordering the images. Default 'menu_order ID'.
+ *                                    Accepts any valid SQL ORDERBY statement.
+ *     @type int          $id         Post ID.
+ *     @type string       $itemtag    HTML tag to use for each image in the gallery.
+ *                                    Default 'dl', or 'figure' when the theme registers HTML5 gallery support.
+ *     @type string       $icontag    HTML tag to use for each image's icon.
+ *                                    Default 'dt', or 'div' when the theme registers HTML5 gallery support.
+ *     @type string       $captiontag HTML tag to use for each image's caption.
+ *                                    Default 'dd', or 'figcaption' when the theme registers HTML5 gallery support.
+ *     @type int          $columns    Number of columns of images to display. Default 3.
+ *     @type string|array $size       Size of the images to display. Accepts any valid image size, or an array of width
+ *                                    and height values in pixels (in that order). Default 'thumbnail'.
+ *     @type string       $ids        A comma-separated list of IDs of attachments to display. Default empty.
+ *     @type string       $include    A comma-separated list of IDs of attachments to include. Default empty.
+ *     @type string       $exclude    A comma-separated list of IDs of attachments to exclude. Default empty.
+ *     @type string       $link       What to link each image to. Default empty (links to the attachment page).
+ *                                    Accepts 'file', 'none'.
  * }
  * @return string HTML content to display gallery.
  */
@@ -2406,8 +2406,9 @@ add_shortcode( 'video', 'wp_video_shortcode' );
  *
  * @see adjacent_image_link()
  *
- * @param string|array $size Optional. Registered image size or flat array of height and width dimensions.
- *                           0 or 'none' will default to 'post_title' or `$text`. Default 'thumbnail'.
+ * @param string|array $size Optional. Image size. Accepts any valid image size, an array of width and
+ *                           height values in pixels (in that order), 0, or 'none'. 0 or 'none' will
+ *                           default to 'post_title' or `$text`. Default 'thumbnail'.
  * @param string       $text Optional. Link text. Default false.
  */
 function previous_image_link( $size = 'thumbnail', $text = false ) {
@@ -2421,11 +2422,12 @@ function previous_image_link( $size = 'thumbnail', $text = false ) {
  *
  * @see adjacent_image_link()
  *
- * @param string|array $size Optional. Registered image size or flat array of height and width dimensions.
- *                           0 or 'none' will default to 'post_title' or `$text`. Default 'thumbnail'.
+ * @param string|array $size Optional. Image size. Accepts any valid image size, an array of width and
+ *                           height values in pixels (in that order), 0, or 'none'. 0 or 'none' will
+ *                           default to 'post_title' or `$text`. Default 'thumbnail'.
  * @param string       $text Optional. Link text. Default false.
  */
-function next_image_link($size = 'thumbnail', $text = false) {
+function next_image_link( $size = 'thumbnail', $text = false ) {
 	adjacent_image_link(false, $size, $text);
 }
 
@@ -2437,8 +2439,8 @@ function next_image_link($size = 'thumbnail', $text = false) {
  * @since 2.5.0
  *
  * @param bool         $prev Optional. Whether to display the next (false) or previous (true) link. Default true.
- * @param string|array $size Optional. Registered image size or flat array of height and width dimensions.
- *                                     Default 'thumbnail'.
+ * @param string|array $size Optional. Image size. Accepts any valid image size, or an array of width and height
+ *                           values in pixels (in that order). Default 'thumbnail'.
  * @param bool         $text Optional. Link text. Default false.
  */
 function adjacent_image_link( $prev = true, $size = 'thumbnail', $text = false ) {
