@@ -96,6 +96,15 @@ final class WP_Term {
 	public $count = 0;
 
 	/**
+	 * Info about the term, as stored in the database.
+	 *
+	 * @since 4.4.0
+	 * @access protected
+	 * @var array
+	 */
+	protected $data = array();
+
+	/**
 	 * Stores the term object's sanitization level.
 	 *
 	 * Does not correspond to a database field.
@@ -139,7 +148,10 @@ final class WP_Term {
 			wp_cache_add( $term_id, $_term, 'terms' );
 		}
 
-		return new WP_Term( $_term );
+		$term_obj = new WP_Term( $_term );
+		$term_obj->filter( $term_obj->filter );
+
+		return $term_obj;
 	}
 
 	/**
@@ -154,6 +166,8 @@ final class WP_Term {
 		foreach ( get_object_vars( $term ) as $key => $value ) {
 			$this->$key = $value;
 		}
+
+		$this->data = sanitize_term( $term, $this->taxonomy, $this->filter );
 	}
 
 	/**
@@ -165,11 +179,6 @@ final class WP_Term {
 	 * @param string $filter Filter context. Accepts 'edit', 'db', 'display', 'attribute', 'js', 'raw'.
 	 */
 	public function filter( $filter ) {
-		// Term has already been filtered - nothing more to do.
-		if ( isset( $this->filter ) && $this->filter === $filter ) {
-			return;
-		}
-
 		sanitize_term( $this, $this->taxonomy, $filter );
 	}
 
@@ -183,5 +192,21 @@ final class WP_Term {
 	 */
 	public function to_array() {
 		return get_object_vars( $this );
+	}
+
+	/**
+	 * Getter.
+	 *
+	 * @since 4.4.0
+	 * @access public
+	 *
+	 * @return mixed
+	 */
+	public function __get( $key ) {
+		switch ( $key ) {
+			case 'data' :
+				return sanitize_term( $this->{$key}, $this->data->taxonomy, 'raw' );
+				break;
+		}
 	}
 }
