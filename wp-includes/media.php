@@ -809,10 +809,12 @@ function wp_get_attachment_image($attachment_id, $size = 'thumbnail', $icon = fa
 		if ( empty($default_attr['alt']) )
 			$default_attr['alt'] = trim(strip_tags( $attachment->post_title )); // Finally, use the title
 
-		$attr = wp_parse_args($attr, $default_attr);
+		$attr   = wp_parse_args( $attr, $default_attr );
+		$srcset = wp_get_attachment_image_srcset( $attachment_id, $size );
+		$sizes  = wp_get_attachment_image_sizes( $attachment_id, $size, $width );
 
 		// Generate srcset and sizes if not already present.
-		if ( empty( $attr['srcset'] ) && ( $srcset = wp_get_attachment_image_srcset( $attachment_id, $size ) ) && ( $sizes = wp_get_attachment_image_sizes( $attachment_id, $size, $width ) ) ) {
+		if ( empty( $attr['srcset'] ) && $srcset && $sizes ) {
 			$attr['srcset'] = $srcset;
 
 			if ( empty( $attr['sizes'] ) ) {
@@ -1043,10 +1045,10 @@ function wp_get_attachment_image_srcset( $attachment_id, $size = 'medium' ) {
  * @return string|bool A valid source size value for use in a 'sizes' attribute or false.
  */
 function wp_get_attachment_image_sizes( $attachment_id, $size = 'medium', $width = null ) {
-	// Try to get the image width from $args parameter.
+	// Try to get the image width from the $width parameter.
 	if ( is_numeric( $width ) ) {
 		$img_width = (int) $width;
-	// Next, use see if a width value was passed in the $size parameter.
+	// Next, see if a width value was passed in the $size parameter.
 	} elseif ( is_array( $size ) ) {
 		$img_width = $size[0];
 	// Finally, use the $size name to return the width of the image.
@@ -1055,7 +1057,7 @@ function wp_get_attachment_image_sizes( $attachment_id, $size = 'medium', $width
 		$img_width = $image ? $image['width'] : false;
 	}
 
-	// Bail early if $image_width isn't set.
+	// Bail early if $img_width isn't set.
 	if ( ! $img_width ) {
 		return false;
 	}
@@ -1148,11 +1150,13 @@ function wp_img_add_srcset_and_sizes( $image ) {
 		}
 	}
 
+	$meta = wp_get_attachment_metadata( $id );
+
 	/*
 	 * If attempts to parse the size value failed, attempt to use the image
 	 * metadata to match the 'src' against the available sizes for an attachment.
 	 */
-	if ( ! $size && ! empty( $id ) && is_array( $meta = wp_get_attachment_metadata( $id ) ) ) {
+	if ( ! $size && ! empty( $id ) && is_array( $meta ) ) {
 		// Parse the image src value from the img element.
 		$src = preg_match( '/src="([^"]+)"/', $image, $match_src ) ? $match_src[1] : false;
 
@@ -1180,8 +1184,11 @@ function wp_img_add_srcset_and_sizes( $image ) {
 
 	}
 
+	$srcset = wp_get_attachment_image_srcset( $id, $size );
+	$sizes  = wp_get_attachment_image_sizes( $id, $size, $width );
+
 	// If ID and size exist, try for 'srcset' and 'sizes' and update the markup.
-	if ( $id && $size && ( $srcset = wp_get_attachment_image_srcset( $id, $size ) ) && ( $sizes = wp_get_attachment_image_sizes( $id, $size, $width ) ) ) {
+	if ( $id && $size && $srcset && $sizes ) {
 		// Format the srcset and sizes string and escape attributes.
 		$srcset_and_sizes = sprintf( ' srcset="%s" sizes="%s"', esc_attr( $srcset ), esc_attr( $sizes) );
 
