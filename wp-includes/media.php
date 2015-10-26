@@ -809,16 +809,19 @@ function wp_get_attachment_image($attachment_id, $size = 'thumbnail', $icon = fa
 		if ( empty($default_attr['alt']) )
 			$default_attr['alt'] = trim(strip_tags( $attachment->post_title )); // Finally, use the title
 
-		$attr   = wp_parse_args( $attr, $default_attr );
-		$srcset = wp_get_attachment_image_srcset( $attachment_id, $size );
-		$sizes  = wp_get_attachment_image_sizes( $attachment_id, $size, $width );
+		$attr = wp_parse_args( $attr, $default_attr );
 
 		// Generate srcset and sizes if not already present.
-		if ( empty( $attr['srcset'] ) && $srcset && $sizes ) {
-			$attr['srcset'] = $srcset;
+		if ( empty( $attr['srcset'] ) ) {
+			$srcset = wp_get_attachment_image_srcset( $attachment_id, $size );
+			$sizes  = wp_get_attachment_image_sizes( $attachment_id, $size, $width );
 
-			if ( empty( $attr['sizes'] ) ) {
-				$attr['sizes'] = $sizes;
+			if ( $srcset && $sizes ) {
+				$attr['srcset'] = $srcset;
+
+				if ( empty( $attr['sizes'] ) ) {
+					$attr['sizes'] = $sizes;
+				}
 			}
 		}
 
@@ -1142,7 +1145,7 @@ function wp_img_add_srcset_and_sizes( $image ) {
 	$size   = preg_match( '/size-([^\s|"]+)/i',   $image, $match_size   ) ? $match_size[1]         : false;
 	$width  = preg_match( '/ width="([0-9]+)"/',  $image, $match_width  ) ? (int) $match_width[1]  : false;
 
-	if ( $id && false === $size ) {
+	if ( $id && ! $size ) {
 		$height = preg_match( '/ height="([0-9]+)"/', $image, $match_height ) ? (int) $match_height[1] : false;
 
 		if ( $width && $height ) {
@@ -1150,18 +1153,18 @@ function wp_img_add_srcset_and_sizes( $image ) {
 		}
 	}
 
-	$meta = wp_get_attachment_metadata( $id );
-
 	/*
 	 * If attempts to parse the size value failed, attempt to use the image
 	 * metadata to match the 'src' against the available sizes for an attachment.
 	 */
-	if ( ! $size && ! empty( $id ) && is_array( $meta ) ) {
+	if ( $id && ! $size ) {
+		$meta = wp_get_attachment_metadata( $id );
+
 		// Parse the image src value from the img element.
 		$src = preg_match( '/src="([^"]+)"/', $image, $match_src ) ? $match_src[1] : false;
 
-		// Return early if the src value is empty.
-		if ( ! $src ) {
+		// Return early if the metadata does not exist or the src value is empty.
+		if ( ! $meta || ! $src ) {
 			return $image;
 		}
 
@@ -1184,16 +1187,18 @@ function wp_img_add_srcset_and_sizes( $image ) {
 
 	}
 
-	$srcset = wp_get_attachment_image_srcset( $id, $size );
-	$sizes  = wp_get_attachment_image_sizes( $id, $size, $width );
-
 	// If ID and size exist, try for 'srcset' and 'sizes' and update the markup.
-	if ( $id && $size && $srcset && $sizes ) {
-		// Format the srcset and sizes string and escape attributes.
-		$srcset_and_sizes = sprintf( ' srcset="%s" sizes="%s"', esc_attr( $srcset ), esc_attr( $sizes) );
+	if ( $id && $size ) {
+		$srcset = wp_get_attachment_image_srcset( $id, $size );
+		$sizes  = wp_get_attachment_image_sizes( $id, $size, $width );
 
-		// Add srcset and sizes attributes to the image markup.
-		$image = preg_replace( '/<img ([^>]+)[\s?][\/?]>/', '<img $1' . $srcset_and_sizes . ' />', $image );
+		if ( $srcset && $sizes ) {
+			// Format the srcset and sizes string and escape attributes.
+			$srcset_and_sizes = sprintf( ' srcset="%s" sizes="%s"', esc_attr( $srcset ), esc_attr( $sizes) );
+
+			// Add srcset and sizes attributes to the image markup.
+			$image = preg_replace( '/<img ([^>]+)[\s?][\/?]>/', '<img $1' . $srcset_and_sizes . ' />', $image );
+		}
 	}
 
 	return $image;
