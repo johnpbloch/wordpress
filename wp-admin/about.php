@@ -45,7 +45,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 		<div class="headline-feature feature-section one-col">
 			<h2><?php _e( 'Twenty Sixteen' ); ?></h2>
 			<div class="media-container">
-				<img src="https://cldup.com/K6k4JfS2nW.png" alt="" />
+				<img src="https://cldup.com/K6k4JfS2nW.png" alt="" srcset="https://cldup.com/F7tEqWxzrx-3000x3000.png 268w, https://cldup.com/zxAXtkbN40-3000x3000.png 536w, https://cldup.com/f2FyXrEthb-3000x3000.png 558w, https://cldup.com/xFofz-J2o0-3000x3000.png 840w, https://cldup.com/2fTSHlMGIt-3000x3000.png 1086w, https://cldup.com/RRCVETtgEs-3000x3000.png 1116w, https://cldup.com/SshVHkB_oX-3000x3000.png 1680w, https://cldup.com/ptbHQzcmog-3000x3000.png 2172w" sizes="(max-width: 500px) calc((100vw - 40px) * .8), (max-width: 782px) calc((100vw - 70px) * .8), (max-width: 960px) calc((100vw - 116px) * .8), (max-width: 1290px) calc((100vw - 240px) * .8), 840px" />
 			</div>
 			<div class="two-col">
 				<div class="col">
@@ -54,12 +54,12 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 					<p><?php _e( 'Twenty Sixteen was built to look great on any device. A fluid grid design, flexible header, fun color schemes, and more, will make your content shine.' ); ?></p>
 					<div class="horizontal-image">
 						<div class="content">
-							<img class="feature-image horizontal-screen" src="https://cldup.com/J-zxmMqkXs.png" alt="" />
+							<img class="feature-image horizontal-screen" src="https://cldup.com/J-zxmMqkXs.png" alt=""  srcset="https://cldup.com/GJ_OChqU-3-3000x3000.png 268w, https://cldup.com/opV2KAg7px-3000x3000.png 535w, https://cldup.com/H7TUss5F-L-3000x3000.png 558w, https://cldup.com/4Mgr3kchBL-3000x3000.png 783w, https://cldup.com/kW9lcVhn3v-3000x3000.png 1116w, https://cldup.com/M2gkxI9RnI-3000x3000.png 1566w" sizes="(max-width: 500px) calc((100vw - 40px) * .8), (max-width: 782px) calc((100vw - 70px) * .8), (max-width: 960px) calc((100vw - 116px) * .5216), (max-width: 1290px) calc((100vw - 240px) * .5216), 548px" />
 						</div>
 					</div>
 				</div>
 				<div class="col feature-image">
-					<img class="vertical-screen" src="https://cldup.com/5mh4eg1O3o.png" alt="" />
+					<img class="vertical-screen" src="https://cldup.com/5mh4eg1O3o.png" alt="" srcset="https://cldup.com/x_sJ-I3UDl-3000x3000.png 107w, https://cldup.com/tlGp0BJTzE-3000x3000.png 214w, https://cldup.com/n613ekUCQg-3000x3000.png 252w, https://cldup.com/tjpHRtg6zh-3000x3000.png 410w, https://cldup.com/Db9pMyLNeJ-3000x3000.png 504w, https://cldup.com/P4PM_7sjQt-3000x3000.png 820w" sizes="(max-width: 500px) calc((100vw - 40px) * .32), (max-width: 782px) calc((100vw - 70px) * .32), (max-width: 960px) calc((100vw - 116px) * .24), (max-width: 1290px) calc((100vw - 240px) * .24), 252px" />
 				</div>
 			</div>
 		</div>
@@ -69,7 +69,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 		<div class="feature-section two-col">
 			<div class="col">
 				<div class="media-container">
-					<img src="https://cldup.com/av6MH44-Au.png" alt="" />
+					<img src="https://cldup.com/av6MH44-Au.png" alt="" srcset="https://cldup.com/KFesVSr1qr-3000x3000.png 335w, https://cldup.com/bX6aec9s9y-3000x3000.png 500w, https://cldup.com/sN3AlF6bSs-3000x3000.png 670w, https://cldup.com/2sAEKiKjQh-3000x3000.png 698w, https://cldup.com/TqUWsx6V2V-3000x3000.png 1000w, https://cldup.com/5gLqAd5tJL-3000x3000.png 1200w, https://cldup.com/m20tMOQZvT-3000x3000.png 1396w, https://cldup.com/d82AnAj-MF-3000x3000.png 2400w" sizes="(max-width: 500px) calc((100vw - 40px)), (max-width: 782px) calc((100vw - 70px), (max-width: 960px) calc((100vw - 116px) * .476), (max-width: 1290px) calc((100vw - 240px) * .476), 500px" />
 				</div>
 			</div>
 			<div class="col">
@@ -83,17 +83,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 		<div class="feature-section two-col">
 			<div class="col">
 				<div class="embed-container">
-					<?php
-					$embed1 = get_site_transient( 'about-page-embed-1' );
-					if ( false === $embed1 ) {
-						$embed1 = wp_oembed_get( 'https://make.wordpress.org/core/2015/10/28/new-embeds-feature-in-wordpress-4-4/' );
-						if ( ! $embed1 ) {
-							$embed1 = '{{unknown}}';
-						}
-						set_site_transient( 'about-page-embed-1', $embed1 );
-					}
-					echo '{{unknown}}' !== $embed1 ? $embed1 : '';
-					?>
+					<blockquote data-secret="OcUe7B6Edh" class="wp-embedded-content"><a href="https://make.wordpress.org/core/2015/10/28/new-embeds-feature-in-wordpress-4-4/">New Embeds Feature in WordPress 4.4</a></blockquote><iframe class="wp-embedded-content" sandbox="allow-scripts" security="restricted" style="display:none;" src="https://make.wordpress.org/core/2015/10/28/new-embeds-feature-in-wordpress-4-4/embed/#?secret=OcUe7B6Edh" data-secret="OcUe7B6Edh" width="600" height="338" title="Embedded WordPress Post" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 				</div>
 				<h3><?php _e( 'Embed your WordPress content' ); ?></h3>
 				<p><?php _e( 'Now you can embed your posts on other sites, even other WordPress sites. Simply drop a post URL into the editor and see an instant embed preview, complete with the title, excerpt, and featured image if you&#8217;ve set one. We&#8217;ll even include your site icon and links for comments and sharing.' ); ?></p>
