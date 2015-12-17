@@ -543,13 +543,17 @@ function _register_widget_update_callback( $id_base, $update_callback, $options 
 }
 
 /**
+ * Registers the form callback for a widget.
+ *
+ * @since 2.8.0
  *
  * @global array $wp_registered_widget_controls
  *
- * @param int|string $id
- * @param string     $name
- * @param callable   $form_callback
- * @param array      $options
+ * @param int|string $id            Widget ID.
+ * @param string     $name          Name attribute for the widget.
+ * @param callable   $form_callback Form callback.
+ * @param array      $options       Optional. Widget control options. See {@see wp_register_widget_control()}.
+ *                                  Default empty array.
  */
 function _register_widget_form_callback($id, $name, $form_callback, $options = array()) {
 	global $wp_registered_widget_controls;
@@ -782,13 +786,13 @@ function dynamic_sidebar( $index = 1 ) {
  *
  * @global array $wp_registered_widgets
  *
- * @param string $callback      Optional, Widget callback to check.
- * @param int    $widget_id     Optional, but needed for checking. Widget ID.
- * @param string $id_base       Optional, the base ID of a widget created by extending WP_Widget.
- * @param bool   $skip_inactive Optional, whether to check in 'wp_inactive_widgets'.
+ * @param string|false $callback      Optional, Widget callback to check. Default false.
+ * @param int|false    $widget_id     Optional. Widget ID. Optional, but needed for checking. Default false.
+ * @param string|false $id_base       Optional. The base ID of a widget created by extending WP_Widget. Default false.
+ * @param bool         $skip_inactive Optional. Whether to check in 'wp_inactive_widgets'. Default true.
  * @return string|false False if widget is not active or id of sidebar in which the widget is active.
  */
-function is_active_widget($callback = false, $widget_id = false, $id_base = false, $skip_inactive = true) {
+function is_active_widget( $callback = false, $widget_id = false, $id_base = false, $skip_inactive = true ) {
 	global $wp_registered_widgets;
 
 	$sidebars_widgets = wp_get_sidebars_widgets();
@@ -1064,11 +1068,14 @@ function the_widget( $widget, $instance = array(), $args = array() ) {
 }
 
 /**
- * Private
+ * Retrieves the widget ID base value.
  *
- * @return string
+ * @since 2.8.0
+ *
+ * @param string $id Widget ID.
+ * @return string Widget ID base.
  */
-function _get_widget_id_base($id) {
+function _get_widget_id_base( $id ) {
 	return preg_replace( '/-[0-9]+$/', '', $id );
 }
 
