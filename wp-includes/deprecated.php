@@ -1757,12 +1757,20 @@ function translate_with_context( $text, $domain = 'default' ) {
 }
 
 /**
- * A version of _n(), which supports contexts.
+ * Legacy version of _n(), which supports contexts.
+ *
  * Strips everything from the translation after the last bar.
  *
  * @since 2.7.0
  * @deprecated 3.0.0 Use _nx()
  * @see _nx()
+ *
+ * @param string $single The text to be used if the number is singular.
+ * @param string $plural The text to be used if the number is plural.
+ * @param int    $number The number to compare against to use either the singular or plural form.
+ * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                       Default 'default'.
+ * @return string The translated singular or plural form.
  */
 function _nc( $single, $plural, $number, $domain = 'default' ) {
 	_deprecated_function( __FUNCTION__, '2.9', '_nx()' );
@@ -1964,17 +1972,20 @@ function get_attachment_innerHTML($id = 0, $fullsize = false, $max_dims = false)
 }
 
 /**
- * Retrieve bookmark data based on ID.
+ * Retrieves bookmark data based on ID.
  *
  * @since 2.0.0
  * @deprecated 2.1.0 Use get_bookmark()
  * @see get_bookmark()
  *
- * @param int $bookmark_id ID of link
- * @param string $output OBJECT, ARRAY_N, or ARRAY_A
- * @return object|array
+ * @param int    $bookmark_id ID of link
+ * @param string $output      Optional. Type of output. Accepts OBJECT, ARRAY_N, or ARRAY_A.
+ *                            Default OBJECT.
+ * @param string $filter      Optional. How to filter the link for output. Accepts 'raw', 'edit',
+ *                            'attribute', 'js', 'db', or 'display'. Default 'raw'.
+ * @return object|array Bookmark object or array, depending on the type specified by `$output`.
  */
-function get_link($bookmark_id, $output = OBJECT, $filter = 'raw') {
+function get_link( $bookmark_id, $output = OBJECT, $filter = 'raw' ) {
 	_deprecated_function( __FUNCTION__, '2.1', 'get_bookmark()' );
 	return get_bookmark($bookmark_id, $output, $filter);
 }
@@ -2037,10 +2048,16 @@ function js_escape( $text ) {
 }
 
 /**
- * Escaping for HTML blocks.
+ * Legacy escaping for HTML blocks.
  *
  * @deprecated 2.8.0 Use esc_html()
  * @see esc_html()
+ *
+ * @param string       $string        String to escape.
+ * @param string       $quote_style   Unused.
+ * @param false|string $charset       Unused.
+ * @param false        $double_encode Whether to double encode. Unused.
+ * @return string Escaped `$string`.
  */
 function wp_specialchars( $string, $quote_style = ENT_NOQUOTES, $charset = false, $double_encode = false ) {
 	_deprecated_function( __FUNCTION__, '2.8', 'esc_html()' );
@@ -2081,10 +2098,10 @@ function attribute_escape( $text ) {
  * @deprecated 2.8.0 Use wp_register_sidebar_widget()
  * @see wp_register_sidebar_widget()
  *
- * @param string|int $name Widget ID.
- * @param callable $output_callback Run when widget is called.
- * @param string $classname Classname widget option.
- * @param mixed $params ,... Widget parameters.
+ * @param string|int $name            Widget ID.
+ * @param callable   $output_callback Run when widget is called.
+ * @param string     $classname       Optional. Classname widget option. Default empty.
+ * @param mixed      $params ,...     Widget parameters.
  */
 function register_sidebar_widget($name, $output_callback, $classname = '') {
 	_deprecated_function( __FUNCTION__, '2.8', 'wp_register_sidebar_widget()' );
