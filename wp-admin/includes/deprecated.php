@@ -266,9 +266,9 @@ function get_editable_authors( $user_id ) {
  *
  * @deprecated 3.1.0 Use get_users()
  *
- * @param int $user_id User ID.
- * @param bool $exclude_zeros Optional, default is true. Whether to exclude zeros.
- * @return mixed
+ * @param int  $user_id       User ID.
+ * @param bool $exclude_zeros Optional. Whether to exclude zeroes. Default true.
+ * @return array Array of editable user IDs, empty array otherwise.
  */
 function get_editable_user_ids( $user_id, $exclude_zeros = true, $post_type = 'post' ) {
 	_deprecated_function( __FUNCTION__, '3.1', 'get_users()' );
@@ -658,16 +658,18 @@ class WP_User_Search {
 endif;
 
 /**
- * Retrieve editable posts from other users.
+ * Retrieves editable posts from other users.
  *
+ * @since 2.3.0
  * @deprecated 3.1.0 Use get_posts()
  * @see get_posts()
  *
- * @param int $user_id User ID to not retrieve posts from.
- * @param string $type Optional, defaults to 'any'. Post type to retrieve, can be 'draft' or 'pending'.
+ * @param int    $user_id User ID to not retrieve posts from.
+ * @param string $type    Optional. Post type to retrieve. Accepts 'draft', 'pending' or 'any' (all).
+ *                        Default 'any'.
  * @return array List of posts from others.
  */
-function get_others_unpublished_posts($user_id, $type='any') {
+function get_others_unpublished_posts( $user_id, $type = 'any' ) {
 	_deprecated_function( __FUNCTION__, '3.1' );
 
 	global $wpdb;
