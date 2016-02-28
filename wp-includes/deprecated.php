@@ -2855,6 +2855,8 @@ function debug_fwrite( $fp, $string ) {
  * @see error_log()
  *
  * @link http://www.php.net/manual/en/function.error-log.php
+ *
+ * @param mixed $fp Unused.
  */
 function debug_fclose( $fp ) {
 	_deprecated_function( __FUNCTION__, 'error_log()' );
@@ -3144,6 +3146,8 @@ function sticky_class( $post_id = null ) {
  * @since 2.3.4
  * @deprecated 3.5.0 Use get_post_ancestors()
  * @see get_post_ancestors()
+ *
+ * @param WP_Post &$post Post object, passed by reference (unused).
  */
 function _get_post_ancestors( &$post ) {
 	_deprecated_function( __FUNCTION__, '3.5' );
@@ -3342,6 +3346,9 @@ function wp_convert_bytes_to_hr( $bytes ) {
  * @since 2.9.0
  * @access private
  * @deprecated 3.7.0
+ *
+ * @param string $t Search terms to "tidy", e.g. trim.
+ * @return string Trimmed search terms.
  */
 function _search_terms_tidy( $t ) {
 	_deprecated_function( __FUNCTION__, '3.7' );
@@ -3375,6 +3382,9 @@ function rich_edit_exists() {
  * @since 2.7.0
  * @access private
  * @deprecated 3.9.0
+ *
+ * @param int $count Number of topics.
+ * @return int Number of topics.
  */
 function default_topic_count_text( $count ) {
 	return $count;
