@@ -2733,10 +2733,10 @@ function index_rel_link() {
  * @since 2.8.0
  * @deprecated 3.3.0
  *
- * @param string $title Optional. Link title format.
+ * @param string $title Optional. Link title format. Default '%title'.
  * @return string
  */
-function get_parent_post_rel_link($title = '%title') {
+function get_parent_post_rel_link( $title = '%title' ) {
 	_deprecated_function( __FUNCTION__, '3.3' );
 
 	if ( ! empty( $GLOBALS['post'] ) && ! empty( $GLOBALS['post']->post_parent ) )
@@ -2763,8 +2763,10 @@ function get_parent_post_rel_link($title = '%title') {
  *
  * @since 2.8.0
  * @deprecated 3.3.0
+ *
+ * @param string $title Optional. Link title format. Default '%title'.
  */
-function parent_post_rel_link($title = '%title') {
+function parent_post_rel_link( $title = '%title' ) {
 	_deprecated_function( __FUNCTION__, '3.3' );
 
 	echo get_parent_post_rel_link($title);
@@ -2775,6 +2777,8 @@ function parent_post_rel_link($title = '%title') {
  *
  * @since 3.2.0
  * @deprecated 3.3.0
+ *
+ * @param WP_Admin_Bar $wp_admin_bar WP_Admin_Bar instance.
  */
 function wp_admin_bar_dashboard_view_site_menu( $wp_admin_bar ) {
 	_deprecated_function( __FUNCTION__, '3.3' );
@@ -2815,6 +2819,10 @@ function is_blog_user( $blog_id = 0 ) {
  * @see error_log()
  *
  * @link http://www.php.net/manual/en/function.error-log.php
+ *
+ * @param string $filename File name.
+ * @param string $mode     Type of access you required to the stream.
+ * @return false Always false.
  */
 function debug_fopen( $filename, $mode ) {
 	_deprecated_function( __FUNCTION__, 'error_log()' );
@@ -2829,6 +2837,9 @@ function debug_fopen( $filename, $mode ) {
  * @see error_log()
  *
  * @link http://www.php.net/manual/en/function.error-log.php
+ *
+ * @param mixed  $fp     Unused.
+ * @param string $string Message to log.
  */
 function debug_fwrite( $fp, $string ) {
 	_deprecated_function( __FUNCTION__, 'error_log()' );
