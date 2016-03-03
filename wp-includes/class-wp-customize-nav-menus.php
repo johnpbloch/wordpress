@@ -72,13 +72,13 @@ final class WP_Customize_Nav_Menus {
 	}
 
 	/**
-	 * Add nonce for customizing menus.
+	 * Adds a nonce for customizing menus.
 	 *
 	 * @since 4.5.0
 	 * @access public
 	 *
-	 * @param  array $nonces Array of nonces.
-	 * @return array $nonces Array of nonces.
+	 * @param array $nonces Array of nonces.
+	 * @return array $nonces Modified array of nonces.
 	 */
 	public function filter_nonces( $nonces ) {
 		$nonces['customize-menus'] = wp_create_nonce( 'customize-menus' );
@@ -822,14 +822,14 @@ final class WP_Customize_Nav_Menus {
 	//
 
 	/**
-	 * Filters arguments for dynamic nav_menu selective refresh partials.
+	 * Filter arguments for dynamic nav_menu selective refresh partials.
 	 *
 	 * @since 4.5.0
 	 * @access public
 	 *
 	 * @param array|false $partial_args Partial args.
 	 * @param string      $partial_id   Partial ID.
-	 * @return array Partial args
+	 * @return array Partial args.
 	 */
 	public function customize_dynamic_partial_args( $partial_args, $partial_id ) {
 
