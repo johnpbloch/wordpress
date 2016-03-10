@@ -1205,7 +1205,7 @@ function register_post_type( $post_type, $args = array() ) {
  * @global array      $wp_post_types          List of post types.
  *
  * @param string $post_type Post type to unregister.
- * @return bool|WP_Error True on success, WP_Error on failure.
+ * @return bool|WP_Error True on success, WP_Error on failure or if the post type doesn't exist.
  */
 function unregister_post_type( $post_type ) {
 	if ( ! post_type_exists( $post_type ) ) {
@@ -5996,7 +5996,7 @@ function wp_delete_auto_drafts() {
 }
 
 /**
- * Queue posts for lazyloading of term meta.
+ * Queues posts for lazy-loading of term meta.
  *
  * @since 4.5.0
  *
