@@ -918,7 +918,7 @@ function get_custom_logo( $blog_id = 0 ) {
  *
  * @since 4.5.0
  *
- * @param int $blog_id Optional. ID of the blog in question. Default current blog.
+ * @param int $blog_id Optional. ID of the blog in question. Default is the ID of the current blog.
  */
 function the_custom_logo( $blog_id = 0 ) {
 	echo get_custom_logo( $blog_id );
@@ -1592,7 +1592,7 @@ function get_archives_link($url, $text, $format = 'html', $before = '', $after =
 	 * Filter the archive link content.
 	 *
 	 * @since 2.6.0
-	 * @since 4.5.0 Added `$url`, `$text`, `$format`, `$before`, and `$after` params.
+	 * @since 4.5.0 Added the `$url`, `$text`, `$format`, `$before`, and `$after` parameters.
 	 *
 	 * @param string $link_html The archive HTML link content.
 	 * @param string $url       URL to archive.
