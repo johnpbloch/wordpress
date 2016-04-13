@@ -85,9 +85,9 @@ function wp_add_inline_style( $handle, $data ) {
 
 	if ( false !== stripos( $data, '</style>' ) ) {
 		_doing_it_wrong( __FUNCTION__, sprintf(
-			/* translators: 1: style, 2: wp_add_inline_style() */
+			/* translators: 1: <style>, 2: wp_add_inline_style() */
 			__( 'Do not pass %1$s tags to %2$s.' ),
-			'<code>style</code>',
+			'<code>&lt;style&gt;</code>',
 			'<code>wp_add_inline_style()</code>'
 		), '3.7' );
 		$data = trim( preg_replace( '#<style[^>]*>(.*)</style>#is', '$1', $data ) );
