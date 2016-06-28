@@ -897,13 +897,16 @@ function get_post_types( $args = array(), $output = 'names', $operator = 'and' )
  *
  * @since 2.9.0
  * @since 3.0.0 The `show_ui` argument is now enforced on the new post screen.
- * @since 4.4.0 The `show_ui` argument is now enforced on the post type listing screen and post editing screen.
+ * @since 4.4.0 The `show_ui` argument is now enforced on the post type listing
+ *              screen and post editing screen.
  *
  * @global array      $wp_post_types List of post types.
  * @global WP_Rewrite $wp_rewrite    Used for default feeds.
  * @global WP         $wp            Used to add query vars.
  *
- * @param string $post_type Post type key, must not exceed 20 characters.
+ * @param string $post_type Post type key. Must not exceed 20 characters and may
+ *                          only contain lowercase alphanumeric characters, dashes,
+ *                          and underscores. See sanitize_key().
  * @param array|string $args {
  *     Array or string of arguments for registering a post type.
  *
@@ -911,7 +914,8 @@ function get_post_types( $args = array(), $output = 'names', $operator = 'and' )
  *                                             Default is value of $labels['name'].
  *     @type array       $labels               An array of labels for this post type. If not set, post
  *                                             labels are inherited for non-hierarchical types and page
- *                                             labels for hierarchical ones. get_post_type_labels().
+ *                                             labels for hierarchical ones. See get_post_type_labels() for a full
+ *                                             list of supported labels.
  *     @type string      $description          A short descriptive summary of what the post type is.
  *                                             Default empty.
  *     @type bool        $public               Whether a post type is intended for use publicly either via
@@ -958,8 +962,14 @@ function get_post_types( $args = array(), $output = 'names', $operator = 'and' )
  *                                             See get_post_type_capabilities().
  *     @type bool        $map_meta_cap         Whether to use the internal default meta capability handling.
  *                                             Default false.
- *     @type array       $supports             An alias for calling add_post_type_support() directly. Defaults to array
- *                                             containing 'title' & 'editor'.
+ *     @type array       $supports             Core feature(s) the post type supports. Serves as an alias for calling
+ *                                             add_post_type_support() directly. Core features include 'title',
+ *                                             'editor', 'comments', 'revisions', 'trackbacks', 'author', 'excerpt',
+ *                                             'page-attributes', 'thumbnail', 'custom-fields', and 'post-formats'.
+ *                                             Additionally, the 'revisions' feature dictates whether the post type
+ *                                             will store revisions, and the 'comments' feature dictates whether the
+ *                                             comments count will show on the edit screen. Defaults is an array
+ *                                             containing 'title' and 'editor'.
  *     @type callable    $register_meta_box_cb Provide a callback function that sets up the meta boxes for the
  *                                             edit form. Do remove_meta_box() and add_meta_box() calls in the
  *                                             callback. Default null.
