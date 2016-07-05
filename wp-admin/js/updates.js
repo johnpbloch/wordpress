@@ -637,7 +637,7 @@
 
 		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
 
-		$document.trigger( 'wp-installer-install-success', response );
+		$document.trigger( 'wp-importer-install-success', response );
 	};
 
 	/**
@@ -885,6 +885,8 @@
 
 		wp.a11y.speak( wp.updates.l10n.updatingMsg, 'polite' );
 		$notice.text( wp.updates.l10n.updating );
+
+		$document.trigger( 'wp-theme-updating' );
 
 		return wp.updates.ajax( 'update-theme', args );
 	};
