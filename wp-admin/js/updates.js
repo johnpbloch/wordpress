@@ -249,7 +249,7 @@
 			wp.updates.queueChecker();
 		}
 
-		if ( 'undefined' !== typeof response.debug ) {
+		if ( 'undefined' !== typeof response.debug && window.console && window.console.log ) {
 			_.map( response.debug, function( message ) {
 				window.console.log( $( '<p />' ).html( message ).text() );
 			} );
@@ -526,7 +526,7 @@
 		$card.removeClass( 'plugin-card-install-failed' ).find( '.notice.notice-error' ).remove();
 
 		$document.trigger( 'wp-plugin-installing', args );
-		
+
 		return wp.updates.ajax( 'install-plugin', args );
 	};
 
@@ -718,7 +718,7 @@
 		wp.a11y.speak( wp.updates.l10n.deleting, 'polite' );
 
 		$document.trigger( 'wp-plugin-deleting', args );
-		
+
 		return wp.updates.ajax( 'delete-plugin', args );
 	};
 
@@ -1043,7 +1043,7 @@
 		$( '.install-theme-info, [data-slug="' + args.slug + '"]' ).removeClass( 'theme-install-failed' ).find( '.notice.notice-error' ).remove();
 
 		$document.trigger( 'wp-theme-installing', args );
-		
+
 		return wp.updates.ajax( 'install-theme', args );
 	};
 
@@ -1174,7 +1174,7 @@
 		$( '.theme-info .update-message' ).remove();
 
 		$document.trigger( 'wp-theme-deleting', args );
-		
+
 		return wp.updates.ajax( 'delete-theme', args );
 	};
 
@@ -1349,7 +1349,6 @@
 				break;
 
 			default:
-				window.console.error( 'Failed to execute queued update job.', job );
 				break;
 		}
 	};
@@ -1938,7 +1937,6 @@
 					break;
 
 				default:
-					window.console.error( 'The page "%s" is not white-listed for bulk action handling.', pagenow );
 					return;
 			}
 
@@ -1970,7 +1968,6 @@
 					break;
 
 				default:
-					window.console.error( 'Failed to identify bulk action: %s', bulkAction );
 					return;
 			}
 
@@ -1982,7 +1979,7 @@
 			$bulkActionForm.find( '.manage-column [type="checkbox"]' ).prop( 'checked', false );
 
 			$document.trigger( 'wp-' + type + '-bulk-' + bulkAction, itemsSelected );
-			
+
 			// Find all the checkboxes which have been checked.
 			itemsSelected.each( function( index, element ) {
 				var $checkbox  = $( element ),
@@ -2023,6 +2020,7 @@
 
 				wp.updates.addAdminNotice( {
 					id:            'bulk-action-notice',
+					className:     'bulk-action-notice',
 					successes:     success,
 					errors:        error,
 					errorMessages: errorMessages,
@@ -2030,7 +2028,12 @@
 				} );
 
 				$bulkActionNotice = $( '#bulk-action-notice' ).on( 'click', 'button', function() {
-					$bulkActionNotice.find( 'ul' ).toggleClass( 'hidden' );
+					// $( this ) is the clicked button, no need to get it again.
+					$( this )
+						.toggleClass( 'bulk-action-errors-collapsed' )
+						.attr( 'aria-expanded', ! $( this ).hasClass( 'bulk-action-errors-collapsed' ) );
+					// Show the errors list.
+					$bulkActionNotice.find( '.bulk-action-errors' ).toggleClass( 'hidden' );
 				} );
 
 				if ( error > 0 && ! wp.updates.queue.length ) {
