@@ -95,6 +95,7 @@ require( ABSPATH . WPINC . '/functions.php' );
 require( ABSPATH . WPINC . '/class-wp.php' );
 require( ABSPATH . WPINC . '/class-wp-error.php' );
 require( ABSPATH . WPINC . '/pomo/mo.php' );
+require( ABSPATH . WPINC . '/class-phpass.php' );
 
 // Include the wpdb class and, if present, a db.php database drop-in.
 global $wpdb;
@@ -148,7 +149,8 @@ require( ABSPATH . WPINC . '/class-wp-theme.php' );
 require( ABSPATH . WPINC . '/template.php' );
 require( ABSPATH . WPINC . '/user.php' );
 require( ABSPATH . WPINC . '/class-wp-user-query.php' );
-require( ABSPATH . WPINC . '/session.php' );
+require( ABSPATH . WPINC . '/class-wp-session-tokens.php' );
+require( ABSPATH . WPINC . '/class-wp-user-meta-session-tokens.php' );
 require( ABSPATH . WPINC . '/meta.php' );
 require( ABSPATH . WPINC . '/class-wp-meta-query.php' );
 require( ABSPATH . WPINC . '/class-wp-metadata-lazyloader.php' );
