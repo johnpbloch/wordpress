@@ -191,6 +191,7 @@ require( ABSPATH . WPINC . '/canonical.php' );
 require( ABSPATH . WPINC . '/shortcodes.php' );
 require( ABSPATH . WPINC . '/embed.php' );
 require( ABSPATH . WPINC . '/class-wp-embed.php' );
+require( ABSPATH . WPINC . '/class-oembed.php' );
 require( ABSPATH . WPINC . '/class-wp-oembed-controller.php' );
 require( ABSPATH . WPINC . '/media.php' );
 require( ABSPATH . WPINC . '/http.php' );
@@ -212,6 +213,8 @@ require( ABSPATH . WPINC . '/rest-api.php' );
 require( ABSPATH . WPINC . '/rest-api/class-wp-rest-server.php' );
 require( ABSPATH . WPINC . '/rest-api/class-wp-rest-response.php' );
 require( ABSPATH . WPINC . '/rest-api/class-wp-rest-request.php' );
+
+$GLOBALS['wp_embed'] = new WP_Embed();
 
 // Load multisite-specific files.
 if ( is_multisite() ) {
