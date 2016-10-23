@@ -179,7 +179,7 @@
 				// Add any non empty args, merging them into the args object.
 				if ( ! _.isEmpty( routeEndpoint.args ) ) {
 
-					// Set as defauls if no args yet.
+					// Set as default if no args yet.
 					if ( _.isEmpty( modelInstance.prototype.args ) ) {
 						modelInstance.prototype.args = routeEndpoint.args;
 					} else {
@@ -196,7 +196,7 @@
 					// Add any non empty args, merging them into the defaults object.
 					if ( ! _.isEmpty( routeEndpoint.args ) ) {
 
-						// Set as defauls if no defaults yet.
+						// Set as default if no defaults yet.
 						if ( _.isEmpty( modelInstance.prototype.options ) ) {
 							modelInstance.prototype.options = routeEndpoint.args;
 						} else {
@@ -302,7 +302,7 @@
 				deferred  = jQuery.Deferred();
 				embeddeds = parentModel.get( '_embedded' ) || {};
 
-				// Verify that we have a valied object id.
+				// Verify that we have a valid object id.
 				if ( ! _.isNumber( modelId ) || 0 === modelId ) {
 					deferred.reject();
 					return deferred;
@@ -362,7 +362,7 @@
 				postId    = parentModel.get( 'id' );
 				embeddeds = parentModel.get( '_embedded' ) || {};
 
-				// Verify that we have a valied post id.
+				// Verify that we have a valid post id.
 				if ( ! _.isNumber( postId ) || 0 === postId ) {
 					deferred.reject();
 					return deferred;
