@@ -797,7 +797,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 	 */
 	public function get_item_schema() {
 		$schema = array(
-			'$schema'    => 'http://json-schema.org/draft-04/schema#',
+			'$schema'    => 'http://json-schema.org/schema#',
 			'title'      => 'post_tag' === $this->taxonomy ? 'tag' : $this->taxonomy,
 			'type'       => 'object',
 			'properties' => array(
@@ -887,42 +887,41 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 		$query_params['exclude'] = array(
 			'description'       => __( 'Ensure result set excludes specific ids.' ),
 			'type'              => 'array',
+			'items'             => array(
+				'type'          => 'integer',
+			),
 			'default'           => array(),
-			'sanitize_callback' => 'wp_parse_id_list',
 		);
 
 		$query_params['include'] = array(
 			'description'       => __( 'Limit result set to specific ids.' ),
 			'type'              => 'array',
+			'items'             => array(
+				'type'          => 'integer',
+			),
 			'default'           => array(),
-			'sanitize_callback' => 'wp_parse_id_list',
 		);
 
 		if ( ! $taxonomy->hierarchical ) {
 			$query_params['offset'] = array(
 				'description'       => __( 'Offset the result set by a specific number of items.' ),
 				'type'              => 'integer',
-				'sanitize_callback' => 'absint',
-				'validate_callback' => 'rest_validate_request_arg',
 			);
 		}
 
 		$query_params['order'] = array(
 			'description'       => __( 'Order sort attribute ascending or descending.' ),
 			'type'              => 'string',
-			'sanitize_callback' => 'sanitize_key',
 			'default'           => 'asc',
 			'enum'              => array(
 				'asc',
 				'desc',
 			),
-			'validate_callback' => 'rest_validate_request_arg',
 		);
 
 		$query_params['orderby'] = array(
 			'description'       => __( 'Sort collection by resource attribute.' ),
 			'type'              => 'string',
-			'sanitize_callback' => 'sanitize_key',
 			'default'           => 'name',
 			'enum'              => array(
 				'id',
@@ -933,23 +932,18 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 				'description',
 				'count',
 			),
-			'validate_callback' => 'rest_validate_request_arg',
 		);
 
 		$query_params['hide_empty'] = array(
 			'description'       => __( 'Whether to hide resources not assigned to any posts.' ),
 			'type'              => 'boolean',
 			'default'           => false,
-			'sanitize_callback' => 'rest_sanitize_request_arg',
-			'validate_callback' => 'rest_validate_request_arg',
 		);
 
 		if ( $taxonomy->hierarchical ) {
 			$query_params['parent'] = array(
 				'description'       => __( 'Limit result set to resources assigned to a specific parent.' ),
 				'type'              => 'integer',
-				'sanitize_callback' => 'absint',
-				'validate_callback' => 'rest_validate_request_arg',
 			);
 		}
 
@@ -957,13 +951,11 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 			'description'       => __( 'Limit result set to resources assigned to a specific post.' ),
 			'type'              => 'integer',
 			'default'           => null,
-			'validate_callback' => 'rest_validate_request_arg',
 		);
 
 		$query_params['slug'] = array(
 			'description'       => __( 'Limit result set to resources with a specific slug.' ),
 			'type'              => 'string',
-			'validate_callback' => 'rest_validate_request_arg',
 		);
 
 		return $query_params;
