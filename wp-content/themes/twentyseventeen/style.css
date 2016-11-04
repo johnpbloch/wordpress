@@ -330,12 +330,6 @@ template {
 	z-index: 100000; /* Above WP toolbar. */
 }
 
-/* Do not show the outline on the skip link target. */
-
-#content[tabindex="-1"]:focus {
-	outline: 0;
-}
-
 /*--------------------------------------------------------------
 # Alignments
 --------------------------------------------------------------*/
@@ -1565,11 +1559,6 @@ body {
 	opacity: 0.7;
 }
 
-.has-header-image.twentyseventeen-front-page .site-branding,
-.has-header-image.home.blog .site-branding {
-	align-self: flex-end;
-}
-
 .site-title {
 	clear: none;
 	font-size: 24px;
@@ -1639,9 +1628,10 @@ body:not(.title-tagline-hidden) .site-branding-text {
 
 .has-header-image.twentyseventeen-front-page .custom-header,
 .has-header-image.home.blog .custom-header {
-	display: flex;
-	min-height: 300px;
-	min-height: 75vh;
+	display: table;
+	height: 300px;
+	height: 75vh;
+	width: 100%;
 }
 
 .custom-header-image {
@@ -1700,6 +1690,13 @@ body:not(.title-tagline-hidden) .site-branding-text {
 
 body:not(.has-header-image) .custom-header-image {
 	padding: 5% 0;
+}
+
+.has-header-image.twentyseventeen-front-page .site-branding,
+.has-header-image.home.blog .site-branding {
+	display: table-cell;
+	height: 100%;
+	vertical-align: bottom;
 }
 
 /*--------------------------------------------------------------
@@ -2970,7 +2967,7 @@ object {
 }
 
 /* Add some space around the visual edit shortcut buttons. */
-.twentyseventeen-panel .customize-partial-edit-shortcut:before {
+.twentyseventeen-panel .customize-partial-edit-shortcut button {
 	top: 30px;
 	left: 30px;
 }
@@ -2986,7 +2983,7 @@ object {
 }
 
 /* Prevent icon colors from clashing with color schemes. */
-.colors-custom .customize-partial-edit-shortcut:before {
+.colors-custom .customize-partial-edit-shortcut button {
 	text-shadow: 0 -1px 1px rgba(0,0,0,.2),
 	             1px 0 1px rgba(0,0,0,.2),
 	             0 1px 1px rgba(0,0,0,.2),
@@ -3241,6 +3238,9 @@ object {
 	.has-header-image.twentyseventeen-front-page .site-branding,
 	.has-header-image.home.blog .site-branding {
 		bottom: 0;
+		display: block;
+		left: 0;
+		height: auto;
 		padding-top: 0;
 		position: absolute;
 		width: 100%;
@@ -3248,7 +3248,8 @@ object {
 
 	.has-header-image.twentyseventeen-front-page .custom-header,
 	.has-header-image.home.blog .custom-header {
-		min-height: 0;
+		display: block;
+		height: auto;
 	}
 
 	.custom-header-image {
@@ -3512,6 +3513,9 @@ object {
 		padding: 1em;
 		position: absolute;
 		right: 0;
+	}
+
+	.site-header .menu-scroll-down .icon {
 		-webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
 		-ms-transform: rotate(90deg); /* IE 9 */
 		transform: rotate(90deg);
@@ -3549,7 +3553,6 @@ object {
 		height: 100vh;
 		max-height: 100%;
 		overflow: hidden;
-		/* padding: 10% 0; */
 	}
 
 	.twentyseventeen-front-page.has-header-image .custom-header-image:before,
