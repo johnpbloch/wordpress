@@ -868,6 +868,7 @@ html[lang="th"] h4,
 html[lang="th"] h5,
 html[lang="th"] h6 {
 	line-height: 1.65;
+	font-family: "Sukhumvit Set", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 html[lang="th"] body,
@@ -876,6 +877,7 @@ html[lang="th"] input,
 html[lang="th"] select,
 html[lang="th"] textarea {
 	line-height: 1.8;
+	font-family: "Sukhumvit Set", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 /* Remove letter-spacing for all non-latin alphabets */
@@ -1686,6 +1688,24 @@ body:not(.title-tagline-hidden) .site-branding-text {
 	-moz-transform: translateX(-50%) translateY(-50%);
 	-webkit-transform: translateX(-50%) translateY(-50%);
 	transform: translateX(-50%) translateY(-50%);
+}
+
+/* For browsers that support 'object-fit' */
+@supports ( object-fit: cover ) {
+	.has-header-image .custom-header-media img,
+	.has-header-video .custom-header-media video,
+	.has-header-video .custom-header-media iframe {
+		height: 100%;
+		left: 0;
+		-o-object-fit: cover;
+		object-fit: cover;
+		top: 0;
+		-ms-transform: none;
+		-moz-transform: none;
+		-webkit-transform: none;
+		transform: none;
+		width: 100%;
+	}
 }
 
 .wp-custom-header .wp-custom-header-video-button { /* Specificity prevents .color-dark button overrides */
