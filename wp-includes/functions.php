@@ -1921,6 +1921,7 @@ function wp_upload_dir( $time = null, $create_dir = true, $refresh_cache = false
 /**
  * A non-filtered, non-cached version of wp_upload_dir() that doesn't check the path.
  *
+ * @since 4.5.0
  * @access private
  *
  * @param string $time Optional. Time formatted in 'yyyy/mm'. Default null.
@@ -5108,6 +5109,8 @@ function _device_can_upload() {
 /**
  * Test if a given path is a stream URL
  *
+ * @since 3.5.0
+ *
  * @param string $path The resource path or URL.
  * @return bool True if the path is a stream URL.
  */
@@ -5389,7 +5392,7 @@ function wp_delete_file( $file ) {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @param string $medium Path to the file to delete.
+	 * @param string $file Path to the file to delete.
 	 */
 	$delete = apply_filters( 'wp_delete_file', $file );
 	if ( ! empty( $delete ) ) {

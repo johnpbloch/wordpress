@@ -1166,6 +1166,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 	 * Checks whether current user can assign all terms sent with the current request.
 	 *
 	 * @since 4.7.0
+	 * @access protected
 	 *
 	 * @param WP_REST_Request $request The request object with post and terms data.
 	 * @return bool Whether the current user can assign the provided terms.
@@ -1517,6 +1518,9 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 	 * By default, WordPress will show password protected posts with a title of
 	 * "Protected: %s", as the REST API communicates the protected status of a post
 	 * in a machine readable format, we remove the "Protected: " prefix.
+	 *
+	 * @since 4.7.0
+	 * @access public
 	 *
 	 * @return string Protected title format.
 	 */
