@@ -25,6 +25,6 @@
   "require": {
     "php": ">=7.0.0",
     "johnpbloch/wordpress-core-installer": "^1.0 || ^2.0",
-    "johnpbloch/wordpress-core": "dev-master"
+    "johnpbloch/wordpress-core": "4.6.27"
   }
 }
